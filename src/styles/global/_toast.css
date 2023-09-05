@@ -1,0 +1,56 @@
+@import 'react-toastify/dist/ReactToastify.css';
+/* ALERTS TOAST STYLES */
+.Toastify__toast-body {
+  font-size: 12px !important;
+}
+.Toastify__toast {
+  min-height: 46px !important;
+}
+.Toastify__toast-container {
+  width: 300px !important;
+}
+.Toastify__toast--info,
+.Toastify__toast--success,
+.Toastify__toast--warning,
+.Toastify__toast--error {
+  background: #ffffff !important;
+  border: 1px solid #ebebeb !important;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 10px !important;
+}
+
+.Toastify__toast--info::after {
+  background: #00c4d0;
+}
+.Toastify__toast--success::after {
+  background: #00a925;
+}
+.Toastify__toast--warning::after {
+  background: #ffd600;
+}
+.Toastify__toast--error::after {
+  background: #d10000;
+}
+
+.Toastify__toast-body {
+  font-family: 'Lato', sans-serif !important;
+  font-style: normal !important;
+  font-weight: bold !important;
+  font-size: 14px !important;
+  line-height: 14px !important;
+  color: #000000 !important;
+}
+.Toastify__close-button {
+  color: #5e5e5e !important;
+}
+@media only screen and (max-width: 480px) {
+  .Toastify__toast-container--top-left,
+  .Toastify__toast-container--top-center,
+  .Toastify__toast-container--top-right {
+    top: 1rem !important;
+    left: auto !important;
+  }
+  .Toastify__toast {
+    margin-bottom: 1rem !important;
+  }
+}

@@ -1,0 +1,38 @@
+.wrapper {
+  display: none;
+  &.active {
+    display: block;
+  }
+  .modal {
+    z-index: 60 !important;
+    .content {
+      width: 40rem;
+      .close {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+      }
+      &.large {
+        width: 55rem;
+      }
+      h1 {
+        font-size: 24px;
+        line-height: 24px;
+      }
+      p {
+        font-size: 16px;
+        line-height: 18px;
+        width: 33rem;
+      }
+    }
+  }
+}
+
+@media (max-width: 920px) {
+  .wrapper .modal .content {
+    width: 100% !important;
+    p {
+      width: 100% !important;
+    }
+  }
+}
