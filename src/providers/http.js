@@ -1,8 +1,8 @@
 import queryString from 'query-string';
-import { API_URL } from '@utils/constants';
+import { VITE_API_URL } from '@utils/constants';
 
 export const http = (() => {
-    const apiUrl = 'http://localhost:3001';
+    const apiUrl = VITE_API_URL;
     function withDefaultHeaders(config, token) {
 
         let headers = {

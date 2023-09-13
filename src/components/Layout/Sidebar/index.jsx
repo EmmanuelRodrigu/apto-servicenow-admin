@@ -62,6 +62,7 @@ export default function Sidebar({ sidebar, store }) {
                 `/${menuBase.children[0].route}`
             )}`}
         >
+            {icons(menuBase.icon)}
             <span className="text">{menuBase.children[0].name}</span>
         </Link>
     );
@@ -120,7 +121,7 @@ export default function Sidebar({ sidebar, store }) {
                                 title={[icons(base.icon), base.name]}
                                 activeInitial={isActiveSubmenu(
                                     base.children.map((option) => {
-                                        return `{/${option.route}}`;
+                                        return `/${option.route}`;
                                     })
                                 )}
                             >
@@ -145,7 +146,7 @@ export default function Sidebar({ sidebar, store }) {
             <div className={`footer ${sidebar == false ? 'hidden-sidebar' : ''}`}>
                     <div className='footer-card'>
                         <div className='mr-2 footer-img'>
-                            <img src={store.user.payload.photo ? store.user.payload.photo : defaultPhoto} alt="imagen usuario" />
+                            <img src={defaultPhoto} alt="imagen usuario" />
                         </div>
                         <div className='footer-user'>
                             <div className='text-white font-medium text-sm'>{'Emmanuel'}</div>

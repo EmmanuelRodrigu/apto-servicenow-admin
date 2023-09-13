@@ -3,7 +3,7 @@ import { http } from '@providers/http.js';
 import notify from '@utils/notify';
 import { Link } from "react-router-dom";
 import Select from 'react-select';
-import { FaTrash, FaMailBulk } from 'react-icons/fa';
+import { FaMailBulk } from 'react-icons/fa';
 import Paginate from '@components/Paginate';
 
 export default function Clients() {
@@ -35,7 +35,7 @@ export default function Clients() {
         <div className="" >
             <div className="flex justify-between pb-5">
                 <h1 className="title">Clientes</h1>
-                <Link className="w-40 text-center bg-black text-slate-50 py-2 rounded-full" to="/nuevo-cliente">Nuevo cliente</Link>
+                <Link className="w-40 text-center bg-black text-slate-50 py-3 rounded-full" to="/nuevo-cliente">Nuevo cliente</Link>
             </div>
             <div className="flex filter">
                 <div className="pt-5 pb-5 pl-10">
@@ -65,8 +65,10 @@ export default function Clients() {
                             <tr >
                                 <th>ID</th>
                                 <th>RFC</th>
+                                <th>Nombre</th>
                                 <th>Contacto principal</th>
                                 <th>Correo electronico</th>
+                                <th>Telefono</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -74,16 +76,17 @@ export default function Clients() {
                     {
                         list.map((v, i) => (
                             <tr key={`index-${i}`}>
-                                <a className={`table-id`} href={`/detalles-usuario/${v?.client?.id ? v.client.id : ''}`}>
-                                    <td>{v?.client?.id ? v.client.id : ''}</td>
-                                </a>
-                                <td>{v?.client?.rfc ? v?.client?.rfc : ''}</td>
-                                <td>{v?.major_contact?.name ? v?.major_contact?.name : ''}</td>
-                                <td>{v?.major_contact?.email ? v?.major_contact?.email : ''}</td>
+                                <div className="pb-2 pl-1">
+                                    <Link className={`table-id`} to={`/detalles-cliente/${v.client.id}`}>
+                                        <td>{v.client.id}</td>
+                                    </Link>
+                                </div>
+                                <td>{v.client.rfc}</td>
+                                <td>{v.client.name}</td>
+                                <td>{v.contact.name + ' ' + v.contact.last_name}</td>
+                                <td>{v.contact.email}</td>
+                                <td>{v.contact.phone}</td>
                                 <td className="flex justify-left">
-                                    <div className="pr-4">
-                                        <FaTrash className="h-6" onClick={() => console.log('eliminar')}/>
-                                    </div>
                                     <FaMailBulk className="h-6" onClick={() => console.log('email')}/>
                                 </td>
                             </tr>

@@ -8,10 +8,13 @@ import Requests from '@containers/panel/Requests';
 import Users from '@containers/panel/Users';
 import NewUser from '@containers/panel/Users/new';
 import UserDetails from '@containers/panel/Users/detail';
-import NewProject from '../containers/panel/ManageProjects/new';
+import NewProject from '../containers/panel/Projects/new';
 import Payments from '@containers/panel/ManageProjects';
 import Clients from '@containers/panel/Clients';
 import NewClient from '@containers/panel/Clients/new';
+import DetailClient from '@containers/panel/Clients/detail';
+import DetailsProject from '../containers/panel/Projects/detail';
+
 
 function RouterPanel(props) {
     const location = useLocation();
@@ -51,10 +54,31 @@ function RouterPanel(props) {
                 }
             />
             <Route
+                path='/detalles-cliente/:id'
+                exact
+                element={
+                    <DetailClient/>
+                }
+            />
+            <Route
                 path='/proyectos'
                 exact
                 element={
                     <Projects/>
+                }
+            />
+            <Route
+                path='/crear-proyecto'
+                exact
+                element={
+                    <NewProject/>
+                }
+            />
+            <Route
+                path='/detalles-proyecto/:id'
+                exact
+                element={
+                    <DetailsProject/>
                 }
             />
             <Route
@@ -83,13 +107,6 @@ function RouterPanel(props) {
                 exact
                 element={
                     <UserDetails/>
-                }
-            />
-            <Route
-                path='/crear-proyecto'
-                exact
-                element={
-                    <NewProject/>
                 }
             />
             <Route

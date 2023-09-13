@@ -6,67 +6,107 @@ import Error from '@components/Error';
 import notify from "@utils/notify";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaPlus, FaMinus } from 'react-icons/fa';
-import Modal from '@components/Modal'
+import Modal from '@components/Modal';
+import Select from 'react-select'; 
 
 export default function NewClient() {
 
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
-    const [contact, setContact] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    let [numContact, setNumContact] = useState(1);
-    let val = 0;
+    const [validSecondContact, setValidSecondContact] = useState(false);
     const options = [
-        {value: 'MASTER', label: 'Master'},
-        {value: 'ADMIN', label: 'Admin'}
-    ];
+        {value: 'fisica', label: 'Fisica'},
+        {value: 'moral', label: 'Moral'},
+    ]
 
     const schema = yup.object({
-        bussiness_name: yup.string().required('El campo nombre es requerido'),
+        person: yup.string(),
         rfc: yup.string().required('El campo RFC es requerido'),
+        bussiness_name: yup.string().required('El campo nombre es requerido'),
         reason_social: yup.string().required('El campo rason social es requerido'),
-        address: yup.string().required('El campo direccion es requerido'),
-        name: yup.string().required('El campo nombre es requerido'),
-        last_name: yup.string().required('El campo apellido es requerido'),
-        email: yup.string().email('El correo electronico debe ser un correo valido').required('El correo electronico es requerido'),
-        phone: yup.string().required('El campo telefono es requerido'),
-        area: yup.string(),
+        street: yup.string().required('El campo direccion es requerido'),
+        cp: yup.string().required('El campo codigo postal es requerido'),
+        municipality: yup.string().required('El campo municipio es requerido'),
+        estate: yup.string().required('El campo estado es requerido'),
+        name_contact: yup.string().required('El campo nombre es requerido'),
+        last_name_contact: yup.string().required('El campo apellido es requerido'),
+        email_contact: yup.string().email('El correo electronico debe ser un correo valido').required('El correo electronico es requerido'),
+        phone_contact: yup.string().required('El campo telefono es requerido'),
+        area_contact: yup.string(),
+        name_scontact: validSecondContact ? yup.string().required('El campo nombre es requerido') : yup.string(),
+        last_name_scontact: validSecondContact ? yup.string().required('El campo apellido es requerido') : yup.string(),
+        email_scontact: validSecondContact ? yup.string().required('El campo correo es requerido') : yup.string(),
+        phone_scontact: validSecondContact ? yup.string().required('El campo telefono es requerido') : yup.string(),
+        area_scontact: yup.string(),
     }).required();
 
     const {
+        setValue,
         register,
         handleSubmit,
         formState: {errors}, 
     } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
-            bussiness_name: '',
+            person: '',
             rfc: '',
+            bussiness_name: '',
             reason_social: '',
-            address: '',
-            name: '',
-            last_name: '',
-            email: '',
-            phone: '',
-            area: ''
+            street: '',
+            cp: '',
+            municipality: '',
+            estate: '',
+            name_contact: '',
+            last_name_contact: '',
+            email_contact: '',
+            phone_contact: '',
+            area_contact: '',
+            name_scontact: '',
+            last_name_scontact: '',
+            email_scontact: '',
+            phone_scontact: '',
+            area_scontact: '',
         }
     });
 
     const onSubmit = async (values) => {
-        setLoading(true);
-        console.log(values)
-        setShowModal(true)
-    };
-
-    const newContact = async (value) => {
-        let neww = [];
-        for(numContact; numContact <= value; numContact++) {
-            neww.push({value: numContact});
-            console.log(numContact)
+        const send = {
+            person: values.person,
+            rfc: values.rfc,
+            bussiness_name: values.bussiness_name,
+            reason_social: values.reason_social,
+            street: values.street,
+            cp: values.cp,
+            municipality: values.municipality,
+            estate: values.estate,
+            name_contact: values.name_contact,
+            last_name_contact: values.last_name_contact,
+            email_contact: values.email_contact,
+            phone_contact: values.phone_contact,
+            area_contact: values.area_contact,
+            secondary_contact: {
+                name_scontact: values.name_scontact,
+                last_name_scontact: values.last_name_scontact,
+                email_scontact: values.email_scontact,
+                phone_scontact: values.phone_scontact,
+                area_scontact: values.area_scontact,
+            }
         }
-        setContact(neww);
-        console.log(neww)
+        setLoading(true);
+        await http.post('api/clients/create', send)
+            .then((response) => {
+                if(response.status > 400) {
+                    notify(response.message, 'error');
+                    setLoading(false);
+                } else {
+                    notify('Cliente creado exitosamente', 'success');
+                    navigate('/clientes')
+                }
+            })
+            .catch((error) => {
+                notify(error, 'error');
+                setLoading(false);
+            });
     };
 
     useEffect(() => {
@@ -81,26 +121,38 @@ export default function NewClient() {
                     <div className='docker border-x border-y w-11/12 '>
                         <div className='pl-10 pr-10 pt-6 pb-4'>
                             <h2 className='subtitle pb-10 text-left'>Informacion de cliente</h2>
-                            <div className='flex flex-cols-2 justify-start'>
-                                <div className='pb-10 w-2/4'>
-                                    <h3 className='text-input'>Nombre*</h3>
-                                    <input 
-                                        type='text' 
-                                        className={`input-form ${errors?.bussiness_name ? 'error' : ''}`}
-                                        placeholder='Escribe el nombre' 
-                                        { ...register('bussiness_name') }
+                            <div className='flex flex-cols-3 justify-start'>
+                                <div className='pb-10 w-1/5'>
+                                    <h3 className='text-input'>Persona</h3>
+                                    <Select 
+                                        options={options}
+                                        className={`w-max w-4/5 text-sm pt-2`}
+                                        placeholder="persona"
+                                        onChange={(option) => {
+                                            setValue('person', option.value)
+                                        }}
                                     />
-                                    <Error error={errors?.bussiness_name} />
+                                    <Error error={errors?.person} />
                                 </div>
-                                <div className='pb-10 w-2/4'>
+                                <div className='pb-10 w-2/5'>
                                     <h3 className='text-input'>RFC*</h3>
-                                    <input 
+                                    <input
                                         type='text' 
                                         placeholder='Escribe el RFC' 
                                         className={`input-form ${errors?.rfc ? 'error' : ''}`}
                                         { ...register('rfc') }
                                     />
                                     <Error error={errors?.rfc} />
+                                </div>
+                                <div className='pb-10 w-2/5'>
+                                    <h3 className='text-input'>Nombre*</h3>
+                                    <input 
+                                        type='text' 
+                                        className={`input-form w-full ${errors?.bussiness_name ? 'error' : ''}`}
+                                        placeholder='Escribe el nombre' 
+                                        { ...register('bussiness_name') }
+                                    />
+                                    <Error error={errors?.bussiness_name} />
                                 </div>
                             </div>
                             <div className='flex flex-cols-2 justify-start'>
@@ -114,94 +166,186 @@ export default function NewClient() {
                                     />
                                     <Error error={errors?.reason_social} />
                                 </div>
+                            </div>
+                            <div className='flex flex-cols-2 justify-start'>
                                 <div className='pb-10 w-2/4'>
-                                    <h3 className='text-input'>Dirección*</h3>
+                                    <h3 className='text-input'>Domicilio*</h3>
                                     <input 
                                         type='text' 
                                         placeholder='Escribe la dirección'
-                                        className={`input-form ${errors?.address ? 'error' : ''}`}
-                                        { ...register('address') }
+                                        className={`input-form ${errors?.street ? 'error' : ''}`}
+                                        { ...register('street') }
                                     />
-                                    <Error error={errors?.address} />
+                                    <Error error={errors?.street} />
                                 </div>
+                                <div className='pb-10 w-2/4'>
+                                    <h3 className='text-input'>Código postal*</h3>
+                                    <input 
+                                        type='text' 
+                                        placeholder='Escribe el código postal'
+                                        className={`input-form ${errors?.cp ? 'error' : ''}`}
+                                        { ...register('cp') }
+                                    />
+                                    <Error error={errors?.cp} />
+                                </div>
+                            </div>
+                            <div className='flex flex-cols-2 justify-start'>
+                                <div className='pb-10 w-2/4'>
+                                    <h3 className='text-input'>Municipio*</h3>
+                                    <input 
+                                        type='text' 
+                                        placeholder='Escribe el municipio'
+                                        className={`input-form ${errors?.municipality ? 'error' : ''}`}
+                                        { ...register('municipality') }
+                                    />
+                                    <Error error={errors?.municipality} />
+                                </div>
+                                <div className='pb-10 w-2/4'>
+                                    <h3 className='text-input'>Estado*</h3>
+                                    <input 
+                                        type='text' 
+                                        placeholder='Escribe el estado'
+                                        className={`input-form ${errors?.estate ? 'error' : ''}`}
+                                        { ...register('estate') }
+                                    />
+                                    <Error error={errors?.estate} />
+                                </div>
+
                             </div>
                         </div>
                         <div className='pl-10 pr-10 pt-4 pb-4'>
                             <div className='flex pb-5'>
-                                <h2 className='subtitle text-left'>Informacion de contacto</h2>
-                                <FaPlus className='border-x border-y' onClick={() => {
-                                    val = val + 1;
-                                    setNumContact(val - 1)
-                                    newContact(val);
-                                }}/>
+                                <h2 className='subtitle text-left'>Informacion de contacto principal</h2>
                             </div>
-                        {
-                            contact?.map((v, i) => (
-                                <div key={`index-${i}`}>
-                                    <div className='flex flex-cols-2'>
-                                        <div className='pr-4'>
-                                            <h3 className='text-input pb-2'>{`Contacto ${i + 1}`}</h3>
-                                        </div>
-                                        <div className='pt-2'>
-                                            <FaMinus onClick={() => {
-                                                
-                                            }}/>
-                                        </div>
+                            <div>
+                                <div className='flex flex-cols-2 justify-start'>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Nombre*</h3>
+                                        <input 
+                                            type='text' 
+                                            placeholder='Escribe el nombre' 
+                                            className={`input-form ${errors?.name_contact ? 'error' : ''}`}
+                                            { ...register('name_contact') }
+                                        />
+                                        <Error error={errors?.name_contact} />
                                     </div>
-                                    <div className='flex flex-cols-2 justify-start'>
-                                        <div className='pb-10 w-2/4'>
-                                            <h3 className='text-input'>Nombre*</h3>
-                                            <input 
-                                                type='text' 
-                                                placeholder='Escribe el nombre' 
-                                                className={`input-form ${errors?.name ? 'error' : ''}`}
-                                                { ...register('name') }
-                                            />
-                                            <Error error={errors?.name} />
-                                        </div>
-                                        <div className='pb-10 w-2/4'>
-                                            <h3 className='text-input'>Apellido*</h3>
-                                            <input 
-                                                placeholder='Escribe el apellido'
-                                                className={`input-form ${errors?.last_name ? 'error' : ''}`}
-                                                { ...register('last_name') }
-                                            />
-                                            <Error error={errors?.last_name} />
-                                        </div>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Apellido*</h3>
+                                        <input 
+                                            placeholder='Escribe el apellido'
+                                            className={`input-form ${errors?.last_name_contact ? 'error' : ''}`}
+                                            { ...register('last_name_contact') }
+                                        />
+                                        <Error error={errors?.last_name_contact} />
                                     </div>
-                                    <div className='flex flex-cols-2 justify-start'>
-                                        <div className='pb-10 w-2/4'>
-                                            <h3 className='text-input'>Correo electronico*</h3>
-                                            <input
-                                                placeholder='Escribe el correo electronico'
-                                                className={`input-form ${errors?.email ? 'error' : ''}`}
-                                                { ...register('email') }
-                                            />
-                                            <Error error={errors?.email} />
-                                        </div>
-                                        <div className='pb-10 w-2/4'>
-                                            <h3 className='text-input'>Telefono*</h3>
-                                            <input
-                                                placeholder='Escribe el telefono'
-                                                className={`input-form ${errors?.phone ? 'error' : ''}`}
-                                                { ...register('phone') }
-                                            />
-                                            <Error error={errors?.phone} />
-                                        </div>
-                                    </div>
-                                        <div className='pb-10 w-2/4'>
-                                            <h3 className='text-input'>Area</h3>
-                                            <input
-                                                placeholder='Escribe el Area de trabajo'
-                                                className={`input-form ${errors?.area ? 'error' : ''}`}
-                                                { ...register('area') }
-                                            />
-                                            <Error error={errors?.area} />
-                                        </div>
                                 </div>
-                                )
-                                )
-                            }
+                                <div className='flex flex-cols-2 justify-start'>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Correo electronico*</h3>
+                                        <input
+                                            placeholder='Escribe el correo electronico'
+                                            className={`input-form ${errors?.email_contact ? 'error' : ''}`}
+                                            { ...register('email_contact') }
+                                        />
+                                        <Error error={errors?.email_contact} />
+                                    </div>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Telefono*</h3>
+                                        <input
+                                            placeholder='Escribe el telefono'
+                                            className={`input-form ${errors?.phone_contact ? 'error' : ''}`}
+                                            { ...register('phone_contact') }
+                                        />
+                                        <Error error={errors?.phone_contact} />
+                                    </div>
+                                </div>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Area</h3>
+                                        <input
+                                            placeholder='Escribe el Area de trabajo'
+                                            className={`input-form ${errors?.area_contact ? 'error' : ''}`}
+                                            { ...register('area_contact') }
+                                        />
+                                        <Error error={errors?.area_contact} />
+                                    </div>
+                            </div>
+                        </div>
+                        <div className='pl-10 pr-10 pt-4 pb-4'>
+                            <div className='flex pb-5'>
+                                <h2 className='subtitle text-left'>Informacion de contacto secundario</h2>
+                            </div>
+                            <div>
+                                <div className='flex flex-cols-2 justify-start'>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Nombre*</h3>
+                                        <input 
+                                            type='text' 
+                                            placeholder='Escribe el nombre' 
+                                            className={`input-form ${errors?.name_scontact ? 'error' : ''}`}
+                                            { ...register('name_scontact') }
+                                            onChange={(type) => {
+                                                const text = type.nativeEvent.data
+                                                text === null ? setValidSecondContact(false): setValidSecondContact(true);
+                                            }}
+                                        />
+                                        <Error error={errors?.name_scontact} />
+                                    </div>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Apellido*</h3>
+                                        <input 
+                                            placeholder='Escribe el apellido'
+                                            className={`input-form ${errors?.last_name_scontact ? 'error' : ''}`}
+                                            { ...register('last_name_scontact') }
+                                            onChange={(type) => {
+                                                const text = type.nativeEvent.data
+                                                text === null ? setValidSecondContact(false): setValidSecondContact(true);
+                                            }}
+                                        />
+                                        <Error error={errors?.last_name_scontact} />
+                                    </div>
+                                </div>
+                                <div className='flex flex-cols-2 justify-start'>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Correo electronico*</h3>
+                                        <input
+                                            placeholder='Escribe el correo electronico'
+                                            className={`input-form ${errors?.email_scontact ? 'error' : ''}`}
+                                            { ...register('email_scontact') }
+                                            onChange={(type) => {
+                                                const text = type.nativeEvent.data
+                                                text === null ? setValidSecondContact(false): setValidSecondContact(true);
+                                            }}
+                                        />
+                                        <Error error={errors?.email_scontact} />
+                                    </div>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Telefono*</h3>
+                                        <input
+                                            placeholder='Escribe el telefono'
+                                            className={`input-form ${errors?.phone_scontact ? 'error' : ''}`}
+                                            { ...register('phone_scontact') }
+                                            onChange={(type) => {
+                                                const text = type.nativeEvent.data
+                                                text === null ? setValidSecondContact(false): setValidSecondContact(true);
+                                            }}
+                                        />
+                                        <Error error={errors?.phone_scontact} />
+                                    </div>
+                                </div>
+                                    <div className='pb-10 w-2/4'>
+                                        <h3 className='text-input'>Area</h3>
+                                        <input
+                                            placeholder='Escribe el Area de trabajo'
+                                            className={`input-form ${errors?.area_scontact ? 'error' : ''}`}
+                                            { ...register('area_scontact') }
+                                            onChange={(type) => {
+                                                const text = type.nativeEvent.data
+                                                text === null ? setValidSecondContact(false): setValidSecondContact(true);
+                                            }}
+                                        />
+                                        <Error error={errors?.area_scontact} />
+                                    </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,16 +356,6 @@ export default function NewClient() {
                     <Link to={'/clients'} className='btn-cancel'>Cancelar</Link>
                 </div>
             </form>
-        {
-        showModal && (
-            <Modal 
-                isOpen={showModal}
-                title={`Elige el contacto principal`}
-                size=""
-                description=""
-            />
-        )
-        }
         </div>
         
     )

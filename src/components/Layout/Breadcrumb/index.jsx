@@ -9,7 +9,7 @@ export default function Breadcrumb() {
     return (
         <div className='font-normal text-sm leading-5  hidden md:block'>
             <ul className='flex'>
-                <li className=''><Link className={`${routes.length > 0 ? 'text-grey-external-3' : 'text-green-external-3'}`} to={`${import.meta.env.VITE_BASE_PREFIX}`}>Inicio</Link></li>
+                <li className=''><Link className={`${routes.length > 0 ? 'text-grey-external-3' : 'text-green-external-3'}`} to={`/`}>Inicio</Link></li>
                 {routes.map((route, i) => {
                     const url = `/${routes.slice(0, i + 1).join('/')}`;
                     const isLast = routes[routes.length - 1];

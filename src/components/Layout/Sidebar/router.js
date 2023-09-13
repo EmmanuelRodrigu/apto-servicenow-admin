@@ -1,19 +1,19 @@
 export const routesList = [
     {
-        name: 'Dashboard',
+        name: null,
         icon: 'dashboard',
-        haveChildren: true,
+        haveChildren: false,
         children: [
             {
                 name: 'Dashboard',
-                route: 'dashboard',
+                route: '',
             },
         ],
     },
     {
-        name: 'Noticias',
+        name: null,
         icon: 'news',
-        haveChildren: true,
+        haveChildren: false,
         children: [
             {
                 name: 'Noticias',
@@ -45,6 +45,10 @@ export const routesList = [
                 name: 'Listado de proyectos',
                 route: 'proyectos',
             },
+            {
+                name: 'Crear proyecto',
+                route: 'crear-proyecto',
+            },
         ],
     },
     {
@@ -74,17 +78,13 @@ export const routesList = [
         ],
     },
     {
-        name: 'Administrador de proyectos',
+        name: 'Administrador de facturas',
         icon: 'settings',
-        haveChildren: true,
+        haveChildren: false,
         children: [
             {
-                name: 'Crear proyecto',
-                route: 'crear-proyecto',
-            },
-            {
                 name: 'Listado de pagos',
-                route: 'listado-de-pagos'
+                route: 'listado-de-pagos',
             }
         ],
     },

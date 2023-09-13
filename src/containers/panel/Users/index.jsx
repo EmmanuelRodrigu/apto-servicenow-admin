@@ -3,7 +3,6 @@ import { http } from '@providers/http.js';
 import notify from '@utils/notify';
 import { Link } from "react-router-dom";
 import Select from 'react-select';
-import { FaTrash } from 'react-icons/fa';
 import Paginate from '@components/Paginate';
 
 export default function Users() {
@@ -74,7 +73,7 @@ export default function Users() {
                     {
                         list.map((v, i) => (
                             <tr key={`index-${i}`}>
-                                <a className="table-id" href={`/detalles-usuario/${v.user.id}`}><td>{v.user.id}</td></a>
+                                <Link className="table-id" to={`/detalles-usuario/${v.user.id}`}><td>{v.user.id}</td></Link>
                                 <td>{v.user.full_name}</td>
                                 <td>{v.data.email}</td>
                                 <td>{v.data.created_at}</td>

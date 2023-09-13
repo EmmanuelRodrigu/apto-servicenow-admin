@@ -6,7 +6,10 @@ export function useEffectAsync(effect, inputs) {
     }, inputs);
 }
 export function getDriverStorage() {
-    return localStorage;
+    if (import.meta.env.VITE_LOCAL_STORAGE == 'true') {
+        return localStorage;
+    }
+    return sessionStorage;
 }
 export function sidebarAction(status, store) {
     getDriverStorage().setItem('sidebarApto', status);
@@ -55,11 +58,11 @@ export function getHasSession(user) {
 };
 export function userFormatShort(response) {
     return {
-        id: response.id,
-        email: response.email,
-        firstName: response.firstName,
-        lastName: response.lastName,
-        fullName: response.fullName,
-        photo: response.imageUrl,
+        id: response?.id,
+        email: response?.email,
+        firstName: response?.firstName,
+        lastName: response?.lastName,
+        fullName: response?.fullName,
+        photo: response?.imageUrl,
     };
 }

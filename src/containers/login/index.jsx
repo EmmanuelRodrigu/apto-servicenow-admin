@@ -10,16 +10,16 @@ import bgImg from '@assets/logo.png'
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@store';
 import { gapi } from 'gapi-script';
-import GoogleLogin from 'react-google-login';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { getDriverStorage, userFormatShort } from "../../utils";
+import { VITE_CLIENT_ID } from '@utils/constants';
 
 export default function Login() {
     const store = useStore();
     const navigate = useNavigate()
     const [show, setShow] = useState(false);
-    const clientId = '231847360650-7mq15l3tmpgreoprlr8qparcn0oubfso.apps.googleusercontent.com';
+    const clientId = VITE_CLIENT_ID;
     const handleClick = () => setShow(!show);
-
 
     const schema = yup.object({
         email: yup.string().email('Debe ser un correo electronico valido').required('El correo electronico es requerido'),
@@ -57,28 +57,16 @@ export default function Login() {
                 notify(error, 'error')
             })
     };
-    
+
     const onSuccess = async (responseGoogle) => {
         document.getElementsByClassName('btn').hidden = true;
-        await http.post('auth/google', {email: responseGoogle.profileObj.email})
-            .then((response) => {
-                if (response.status > 400) {
-                    notify(response.message, 'error');
-                    navigate('/');
-                } else {
-                    store.setSession(true);
-                    saveToken(responseGoogle.accessToken)
-                    saveUser(responseGoogle.profileObj)
-                    navigate('/dashboard');
-                };
-            })
-            .catch((error) => {
-                notify(error, 'error')
-            })
-        
+        store.setSession(true);
+        saveToken(responseGoogle?.credential)
+        saveUser(responseGoogle?.profileObj)
+        navigate('/dashboard');
     };
 
-    const onFailure = () => {
+    const onError = () => {
         notify('Selecciona una cuenta de Google para iniciar sesión', 'info');
         navigate('/');
     };
@@ -135,15 +123,15 @@ export default function Login() {
                             </div>
                             <div className='mt-8 flex flex-col gap-y-4'>
                                 <button
-                                    className='active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4 bg-black rounded-xl text-white font-bold text-lg'>Iniciar sesión</button>
-                                <GoogleLogin
-                                    className='flex items-center justify-center gap-2 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4  rounded-xl text-gray-700 font-semibold text-lg border-2 border-gray-100 '
-                                    clientId={clientId}
-                                    onSuccess={onSuccess}
-                                    onFailure={onFailure}
-                                    buttonText="Continuar con Google"
-                                    cookiePolicy={"single_host_origin"}
-                                />
+                                    className='active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4 bg-black rounded-xl text-white font-bold text-lg'>Iniciar sesión
+                                </button>
+                                <GoogleOAuthProvider clientId={clientId}>
+                                    <GoogleLogin
+                                        onSuccess={onSuccess}
+                                        onError={onError}
+                                        useOneTap
+                                    />
+                                </GoogleOAuthProvider>
                             </div>
                         </form>
                     </div>

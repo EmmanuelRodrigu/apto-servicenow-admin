@@ -65,18 +65,24 @@ export default function Projects() {
                             <tr >
                                 <th>ID</th>
                                 <th>Nombre proyecto</th>
-                                <th>Tipo de proyecto</th>
-                                <th>Fecha de creacion</th>=
+                                <th>RFC cliente</th>
+                                <th>Nombre cliente</th>
+                                <th>Contacto</th>
+                                <th>Estatus</th>
+                                <th>Fecha de creacion</th>
                             </tr>
                         </thead>
                         <tbody>
                     {
                         list.map((v, i) => (
                             <tr key={`index-${i}`}>
-                                <a className="border-x border-y rounded-full bg-black text-white hover:bg-indigo-600" href={`/detalles-proyecto/${v.data.id}`}><td>{v.data.id}</td></a>
-                                <td>{v.data.name}</td>
-                                <td>{v.typeProject.type}</td>
-                                <td>{v.typeProject.created_at}</td>=
+                                <Link className="border-x border-y rounded-full bg-black text-white hover:bg-indigo-600" to={`/detalles-proyecto/${v.id}`}><td>{v.id}</td></Link>
+                                <td>{v.name_project}</td>
+                                <td>{v.rfc}</td>
+                                <td>{v.name_client}</td>
+                                <td>{v.contact}</td>
+                                <td>{}</td>
+                                <td>{v.created_at}</td>
                             </tr>
                         ))
 

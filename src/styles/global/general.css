@@ -16,10 +16,10 @@ body *{
     font-family: 'Mukta', sans-serif;
 }
 .title {
-    @apply mb-2 text-2xl font-bold pr-5;
+    @apply mb-2 text-4xl font-bold text-fuchsia-800 pr-5;
 }
 .subtitle {
-    @apply text-indigo-950 font-bold text-2xl pr-5;
+    @apply text-indigo-950 font-bold text-3xl text-fuchsia-950 pr-5;
 }
 .text-input {
     @apply text-xl text-violet-950;
@@ -35,4 +35,7 @@ body *{
 }
 .docker {
     border-bottom: 2px solid #9c9a96;
+}
+.btn-delete {
+    @apply w-40 h-10 border-x border-y border-black text-white bg-black rounded-lg hover:bg-red-900;
 }
