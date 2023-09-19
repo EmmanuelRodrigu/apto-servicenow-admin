@@ -43,5 +43,5 @@ table {
     @apply bg-slate-100 rounded-lg;
 }
 .table-id {
-    @apply border-x border-y pl-1 pr-1 rounded-lg bg-black text-white hover:bg-indigo-300;
+    @apply border-x border-y pl-2 pr-2 pt-1 pb-1 text-lg rounded-lg bg-black text-white hover:bg-indigo-300;
 }

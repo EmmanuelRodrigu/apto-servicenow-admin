@@ -14,6 +14,7 @@ export default function NewClient() {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
     const [validSecondContact, setValidSecondContact] = useState(false);
+    const [optionsTaxData, setOptionsTaxData] = useState(null);
     const options = [
         {value: 'fisica', label: 'Fisica'},
         {value: 'moral', label: 'Moral'},
@@ -21,6 +22,7 @@ export default function NewClient() {
 
     const schema = yup.object({
         person: yup.string(),
+        tax_data: yup.number().required('El campo regimen fiscal es requerido'),
         rfc: yup.string().required('El campo RFC es requerido'),
         bussiness_name: yup.string().required('El campo nombre es requerido'),
         reason_social: yup.string().required('El campo rason social es requerido'),
@@ -49,6 +51,7 @@ export default function NewClient() {
         resolver: yupResolver(schema),
         defaultValues: {
             person: '',
+            tax_data: null,
             rfc: '',
             bussiness_name: '',
             reason_social: '',
@@ -72,6 +75,7 @@ export default function NewClient() {
     const onSubmit = async (values) => {
         const send = {
             person: values.person,
+            tax_data: values.tax_data,
             rfc: values.rfc,
             bussiness_name: values.bussiness_name,
             reason_social: values.reason_social,
@@ -109,8 +113,19 @@ export default function NewClient() {
             });
     };
 
+    const getTaxData = async () => {
+        await http.get('api/clients/taxdata')
+            .then((response) => {
+                console.log(response);
+                setOptionsTaxData(response)
+            })
+            .catch((error) => {
+                notify(error, 'error')
+            });
+    };
+
     useEffect(() => {
-        
+        getTaxData();
     }, [])
 
     return (
@@ -121,13 +136,27 @@ export default function NewClient() {
                     <div className='docker border-x border-y w-11/12 '>
                         <div className='pl-10 pr-10 pt-6 pb-4'>
                             <h2 className='subtitle pb-10 text-left'>Informacion de cliente</h2>
+                            <div>
+                                <div className='pb-10'>
+                                    <h3 className='text-input'>Regimen Fiscal*</h3>
+                                    <Select
+                                        options={optionsTaxData}
+                                        className={`w-max w-3/6 text-sm pt-2`}
+                                        placeholder="Selecciona una opcion"
+                                        onChange={(option) => {
+                                            setValue('tax_data', option.value)
+                                        }}
+                                    />
+                                    <Error error={errors?.tax_data} />
+                                </div>
+                            </div>
                             <div className='flex flex-cols-3 justify-start'>
                                 <div className='pb-10 w-1/5'>
                                     <h3 className='text-input'>Persona</h3>
                                     <Select 
                                         options={options}
-                                        className={`w-max w-4/5 text-sm pt-2`}
-                                        placeholder="persona"
+                                        className={`w-max w-3/4 text-sm pt-2`}
+                                        placeholder="Selecciona una opcion"
                                         onChange={(option) => {
                                             setValue('person', option.value)
                                         }}

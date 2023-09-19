@@ -4,21 +4,35 @@ import notify from '@utils/notify';
 import { Link } from "react-router-dom";
 import Select from 'react-select';
 import Paginate from '@components/Paginate';
+import paramsState from "@components/Hooks/Params";
+import { useDebouncedCallback } from "use-debounce";
+import { useStore } from '@store';
 
 export default function Users() {
+    const store = useStore();
+    const { app } = store;
     const [list, setList] = useState([]);
-    const [params, setParams] = useState([]);
-    const [pagesLength, setPagesLength] = useState(null);
-    const options = [
+    const {useCustomParams, paginate, setPaginate}  = paramsState();
+    const [params, updatedParams] = useCustomParams();
+    const [query, setQuery] = useState(params.query ? params.query : '');
+    const [order, setOrder] = useState(params.order ? params.order : '');
+    const [rol, setRol] = useState(params.rol ? params.rol : '');
+
+    const optionsRol = [
         { value: 'MASTER', label: 'Master' },
         { value: 'ADMIN', label: 'Admin' },
+    ];
+
+    const optionsOrder = [
+        { value: 'ASC', label: 'ID Ascendente'},
+        { value: 'DESC', label: 'ID Descendente'},
     ]
 
     const getData = async () => {
         await http.get('api/users', params)
             .then((response) => {
                 setList(response);
-                setPagesLength(response.length);
+                console.log(response)
             })
             .catch((error) => {
                 notify(error, 'error')
@@ -29,6 +43,11 @@ export default function Users() {
         getData();
     }, [])
 
+    const debounceQuery = useDebouncedCallback(() => {
+        updatedParams({query, order, page: 1});
+        getData()
+    }, app.debounceTime)
+
     return (
         <div className="" >
             <div className="flex justify-between pb-5">
@@ -38,7 +57,16 @@ export default function Users() {
             <div className="flex filter">
                 <div className="pt-5 pb-5 pl-10">
                     <p className="text-lg">Busqueda de usuarios</p>
-                    <input className="text-sm text-left pl-2 h-8 w-60 rounded-md" placeholder="Buscar por nombre o ID" type="text"></input>
+                    <input 
+                        className="text-sm text-left pl-2 h-8 w-60 rounded-md" 
+                        placeholder="Buscar por nombre o ID" 
+                        type="text"
+                        onChange={(e) => {
+                            setQuery(e.target.value);
+                            debounceQuery();
+                        }}
+                        value={query}
+                    />
                 </div>
                 <div className="pt-5 pb-5 pl-20">
                     <p className="text-lg">Filtros</p>
@@ -46,12 +74,28 @@ export default function Users() {
                         <div className="pr-5">
                          <input className="text-sm text-center pr-5 h-8 w-48 rounded-md" placeholder="Fecha de creacion" type="date"></input>
                         </div>
-                        <Select
-                            className="text-sm w-40"
-                            options={options}
-                            placeholder="Rol"
-                            
-                        />
+                        <div>
+                            <Select
+                                className="text-sm w-40"
+                                options={optionsRol}
+                                placeholder="Rol"
+                                onChange={(option) => {
+                                    setRol(option.value);
+                                    debounceQuery();
+                                }}
+                            />
+                        </div>
+                        <div className="pl-5"> 
+                            <Select
+                                className="text-sm w-40"
+                                options={optionsOrder}
+                                placeholder="Ordenar por"
+                                onChange={(option) => {
+                                    setRol(option.value);
+                                    debounceQuery();
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -73,11 +117,15 @@ export default function Users() {
                     {
                         list.map((v, i) => (
                             <tr key={`index-${i}`}>
-                                <Link className="table-id" to={`/detalles-usuario/${v.user.id}`}><td>{v.user.id}</td></Link>
-                                <td>{v.user.full_name}</td>
-                                <td>{v.data.email}</td>
-                                <td>{v.data.created_at}</td>
-                                <td>{v.rol.rol == 1 ? 'MASTER': 'ADMIN'}</td>
+                                <td>
+                                    <Link className="table-id" to={`/detalles-usuario/${v.id}`}>
+                                        {v.id}
+                                    </Link>
+                                </td>
+                                <td>{v.full_name}</td>
+                                <td>{v.email}</td>
+                                <td>{v.created_at}</td>
+                                <td>{v.rol == 1 ? 'MASTER': 'ADMIN'}</td>
                                 <td>{}</td>
                             </tr>
                         ))
@@ -92,9 +140,8 @@ export default function Users() {
 
             }
             <Paginate
-                pages={[1, 2, 3, 4]}
-                currentPage={2}
-                pagesLength={pagesLength}
+                items={list}
+                itemsPerPage={10}
             />
         </div>
             

@@ -11,7 +11,8 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function ManageProjects() {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(false);
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState(null);
+    const [ dataClient, setDataClient] = useState(null);
     const options = [
         {value: 'CMS', label: 'Administrador'},
         {value: 'APP', label: 'App movil'},
@@ -23,6 +24,7 @@ export default function ManageProjects() {
         name: yup.string().required('El nombre de proyecto es requerido'),
         description: yup.string().required('La descripcion es requerida'),
         typeProject: yup.array().min(1, 'Se requiere al menos 1 tipo de proyecto'),
+        client: yup.number().required('El cliente es requerido')
     }).required();
 
     const {
@@ -36,15 +38,29 @@ export default function ManageProjects() {
             name: '',
             description: '',
             typeProject: [],
+            client: null,
         }
     });
 
+    const getData = async () => {
+        setDataClient(null);
+        await http.get('api/clients/options')
+            .then((response) => {
+                setDataClient(response)
+            })
+            .catch((error) => {
+                notify(error, 'error');
+            });
+    }
+
     const onSubmit = async (values) => {
+        console.log(projects)
         const type = projects.map((project) => { return [project.value] })
         const data = {
             name: values.name,
             description: values.description,
             typeProject: type,
+            clientId: values.client
         }
         setLoading(true);
         await http.post('api/projects/create', data)
@@ -62,7 +78,7 @@ export default function ManageProjects() {
     };
 
     useEffect(() => {
-        
+        getData();
     }, [])
 
     return (
@@ -100,11 +116,23 @@ export default function ManageProjects() {
                                     options={options} 
                                     className='w-5/12'
                                     onChange={(option) => {
-                                        setValue('typeProject', option)
+                                        setValue('typeProject', option.value)
                                         setProjects(option)
                                     }}
                                 />
                                 <Error error={errors?.typeProject} />
+                            </div>
+                            <div className='pb-10'>
+                                <h3 className='text-input'>Seleccionar cliente*</h3>
+                                <Select
+                                    placeholder='Selecciona un cliente'
+                                    options={dataClient} 
+                                    className='w-5/12'
+                                    onChange={(option) => {
+                                        setValue('client', option.value)
+                                    }}
+                                />
+                                <Error error={errors?.client} />
                             </div>
                         </div>
                     </div>

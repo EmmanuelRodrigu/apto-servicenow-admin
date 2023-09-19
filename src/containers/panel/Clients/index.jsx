@@ -3,33 +3,46 @@ import { http } from '@providers/http.js';
 import notify from '@utils/notify';
 import { Link } from "react-router-dom";
 import Select from 'react-select';
+import { useStore } from '@store';
 import { FaMailBulk } from 'react-icons/fa';
 import Paginate from '@components/Paginate';
+import paramsState from "@components/Hooks/Params";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function Clients() {
+    const store = useStore();
+    const { app } = store;
     const [list, setList] = useState([]);
-    const [params, setParams] = useState([]);
-    const [pagesLength, setPagesLength] = useState(null);
+    const {useCustomParams, paginate, setPaginate}  = paramsState();
+    const [params, updatedParams] = useCustomParams();
+    const [query, setQuery] = useState(params.query ? params.query : '');
+    const [order, setOrder] = useState(params.order ? params.order : '');
+
     const options = [
-        { value: 'MASTER', label: 'Master' },
-        { value: 'ADMIN', label: 'Admin' },
+        {value: 'ASC', label: 'ID Ascendente'},
+        {value: 'DESC', label: 'ID Descendente'},
     ]
 
     const getData = async () => {
+        setList(null)
         await http.get('api/clients', params)
             .then((response) => {
                 setList(response);
-                setPagesLength(response.length);
-                console.log(response)
             })
             .catch((error) => {
                 notify(error, 'error')
             });
     };
 
+    
     useEffect(() => {
         getData();
     }, [])
+    
+    const debounceQuery = useDebouncedCallback(() => {
+        updatedParams({query, order, page: 1});
+        getData()
+    }, app.debounceTime)
 
     return (
         <div className="" >
@@ -40,20 +53,31 @@ export default function Clients() {
             <div className="flex filter">
                 <div className="pt-5 pb-5 pl-10">
                     <p className="text-lg">Busqueda de clientes</p>
-                    <input className="text-sm text-left pl-2 h-8 w-60 rounded-md" placeholder="Buscar por contacto o ID" type="text"></input>
+                    <input 
+                        className="text-sm text-left pl-2 h-8 w-60 rounded-md" 
+                        placeholder="Buscar por contacto o ID" 
+                        type="text"
+                        onChange={(e) => {
+                            setQuery(e.target.value);
+                            debounceQuery();
+                        }}
+                        value={query}
+                    />
                 </div>
                 <div className="pt-5 pb-5 pl-20">
                     <p className="text-lg">Filtros</p>
                     <div className="flex">
                         <div className="pr-5">
-                         <input className="text-sm text-center pr-5 h-8 w-48 rounded-md" placeholder="Fecha de creacion" type="date"></input>
-                        </div>
-                        <Select
-                            className="text-sm w-40"
+                         <Select 
+                            className="text-sm text-center pr-5 h-8 w-48 rounded-md" 
+                            placeholder="Ordenar por" 
                             options={options}
-                            placeholder="Rol"
-                            
-                        />
+                            onChange={(option) => {
+                                setOrder(option.value);
+                                debounceQuery();
+                            }}
+                         />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,16 +100,16 @@ export default function Clients() {
                     {
                         list.map((v, i) => (
                             <tr key={`index-${i}`}>
-                                <div className="pb-2 pl-1">
-                                    <Link className={`table-id`} to={`/detalles-cliente/${v.client.id}`}>
-                                        <td>{v.client.id}</td>
+                                <td>
+                                    <Link className={`table-id`} to={`/detalles-cliente/${v.id}`}>
+                                        {v.id}
                                     </Link>
-                                </div>
-                                <td>{v.client.rfc}</td>
-                                <td>{v.client.name}</td>
-                                <td>{v.contact.name + ' ' + v.contact.last_name}</td>
-                                <td>{v.contact.email}</td>
-                                <td>{v.contact.phone}</td>
+                                </td>
+                                <td className="pt-1">{v.rfc}</td>
+                                <td>{v.name}</td>
+                                <td>{v.full_name}</td>
+                                <td>{v.email}</td>
+                                <td>{v.phone}</td>
                                 <td className="flex justify-left">
                                     <FaMailBulk className="h-6" onClick={() => console.log('email')}/>
                                 </td>
@@ -102,9 +126,8 @@ export default function Clients() {
 
             }
             <Paginate
-                pages={[1, 2, 3, 4]}
-                currentPage={2}
-                pagesLength={pagesLength}
+                items={list}
+                itemsPerPage={10}
             />
         </div>
             

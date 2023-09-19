@@ -10,12 +10,13 @@ import { http } from '@providers/http';
 import notify from "@utils/notify";
 import Modal from '@components/Modal';
 
-export default function UpdateClient({ data, id, navigate }) {
+export default function UpdateClient({ data, id, navigate, optionsTaxData, defaultOption }) {
 
     const store = useStore();
     const [validSecondContact, setValidSecondContact] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
+
     const options = [
         {value: 'Fisica', label: 'Fisica'},
         {value: 'Moral', label: 'Moral'},
@@ -23,6 +24,7 @@ export default function UpdateClient({ data, id, navigate }) {
 
     const schema = yup.object({
         person: yup.string(),
+        tax_data: yup.number().required('El campo regimen fiscal es requerido'),
         rfc: yup.string().required('El campo RFC es requerido'),
         bussiness_name: yup.string().required('El campo nombre es requerido'),
         reason_social: yup.string().required('El campo rason social es requerido'),
@@ -51,6 +53,7 @@ export default function UpdateClient({ data, id, navigate }) {
         resolver: yupResolver(schema),
         defaultValues: {
             person: data.dataClient.person,
+            tax_data: null,
             rfc: data.dataClient.rfc,
             bussiness_name: data.dataClient.name,
             reason_social: data.dataClient.reason_social,
@@ -78,6 +81,7 @@ export default function UpdateClient({ data, id, navigate }) {
     const onSubmit = async (values) => {
         const send = {
             person: values.person,
+            tax_data: values.tax_data,
             rfc: values.rfc,
             bussiness_name: values.bussiness_name,
             reason_social: values.reason_social,
@@ -108,7 +112,7 @@ export default function UpdateClient({ data, id, navigate }) {
                     setLoading(false);
                     notify('Cliente actualizado', 'success');
                     navigate('/clientes');
-                }
+                };
             })
             .catch((error) => {
                 notify(error, 'error');
@@ -143,14 +147,29 @@ export default function UpdateClient({ data, id, navigate }) {
                         <div className='docker border-x border-y w-11/12 '>
                             <div className='pl-10 pr-10 pt-6 pb-4'>
                                 <h2 className='subtitle pb-10 text-left'>Informacion de cliente</h2>
+                                <div>
+                                    <div className='pb-10'>
+                                        <h3 className='text-input'>Regimen fiscal*</h3>
+                                        <Select
+                                            defaultInputValue={defaultOption}
+                                            options={optionsTaxData?.taxData}
+                                            className={`w-max w-4/6 text-sm pt-2`}
+                                            placeholder='Seleccionar una opcion'
+                                            onChange={(option) => {
+                                                setValue('tax_data', option.value)
+                                            }}
+                                        />
+                                        <Error error={errors?.tax_data} />
+                                    </div>
+                                </div>
                                 <div className='flex flex-cols-3 justify-start'>
-                                    <div className='pb-10 w-1/5'>
+                                    <div className='pb-10 w-4/12'>
                                         <h3 className='text-input'>Persona</h3>
                                         <Select
                                             defaultInputValue={data.dataClient.person}
                                             options={options}
-                                            className={`w-max w-4/5 text-sm pt-2`}
-                                            placeholder="persona"
+                                            className={`w-4/6 text-sm pt-2`}
+                                            placeholder="Seleccionar una opcion"
                                             onChange={(option) => {
                                                 setValue('person', option.value)
                                             }}

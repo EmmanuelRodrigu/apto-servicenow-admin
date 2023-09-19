@@ -7,7 +7,7 @@ export default function ParamsState() {
 
     const [paginate, setPaginate] = useState({
         total: 0,
-        perPage: 10,
+        limit: 10,
         currentPage: 1,
         lastPage: 1, //total pages
         prev: null,
@@ -18,8 +18,8 @@ export default function ParamsState() {
         const { pathname, search } = location;
         const params = queryString.parse(search);
         if (basic) {
-            if (!params.perPage) {
-                params.perPage = paginate.perPage;
+            if (!params.limit) {
+                params.limit = paginate.limit;
             }
         }
         const path = pathname;
