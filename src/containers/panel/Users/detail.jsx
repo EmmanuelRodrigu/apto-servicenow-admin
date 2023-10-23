@@ -35,12 +35,12 @@ export default function UserDetails() {
     } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
-            name: data.dataUser.name,
-            first_last_name: data.dataUser.first_last_name,
-            second_last_name: data.dataUser.second_last_name,
-            email: data.profileUser.email,
+            name: data?.dataUser.name,
+            first_last_name: data?.dataUser.first_last_name,
+            second_last_name: data?.dataUser.second_last_name,
+            email: data?.profileUser.email,
             password: 'Apto1234',
-            rol: data.rol,
+            rol: data?.rol.value,
         }
     });
 
@@ -48,7 +48,6 @@ export default function UserDetails() {
         await http.get(`api/users/${id}`)
             .then((response) => {
                 setData(response);
-                console.log(response.dataUser)
             })
     }
 
@@ -93,7 +92,8 @@ export default function UserDetails() {
                             </div>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Primer apellido del usuario*</h3>
-                                <input 
+                                <input
+                                    defaultValue={data?.dataUser.first_last_name}
                                     type='text' 
                                     placeholder='Escribe el apellido' 
                                     className='input-form'
@@ -104,6 +104,7 @@ export default function UserDetails() {
                             <div className='pb-10'>
                                 <h3 className='text-input'>Segundo apellido del usuario*</h3>
                                 <input 
+                                    defaultValue={data?.dataUser.second_last_name}
                                     type='text' 
                                     placeholder='Escribe el apellido' 
                                     className='input-form'
@@ -116,7 +117,8 @@ export default function UserDetails() {
                             <h2 className='subtitle text-left pb-10'>Perfil</h2>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Correo electronico*</h3>
-                                <input 
+                                <input
+                                    defaultValue={data?.profileUser.email} 
                                     type='text' 
                                     placeholder='email@email.com' 
                                     className='input-form'
@@ -126,7 +128,7 @@ export default function UserDetails() {
                             </div>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Contraseña*</h3>
-                                <input 
+                                <input
                                     placeholder='Apto1234'
                                     className='input-form'
                                     { ...register('password') }
@@ -135,7 +137,8 @@ export default function UserDetails() {
                             </div>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Rol del usuario*</h3>
-                                <Select 
+                                <Select
+                                    value={data?.rol}
                                     placeholder='Selecciona una opcion'
                                     options={options} 
                                     className=''

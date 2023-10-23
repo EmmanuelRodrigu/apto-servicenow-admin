@@ -15,6 +15,7 @@ export default function NewClient() {
         http.get(`api/clients/${id}`)
             .then((response) => {
                 setData(response);
+                console.log(response)
             })
             .catch((error) => {
                 notify(error, 'error');

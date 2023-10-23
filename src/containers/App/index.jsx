@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import Layout from '@components/Layout';
 import { http } from '@providers/http';
 import notify from '@utils/notify';
+import { useNavigate } from 'react-router-dom';
 import {
   userFormatShort,
   getDriverStorage,
@@ -13,22 +14,25 @@ import {
   getSidebar,
   useEffectAsync,
   getHasSession,
+  setRol,
 } from '@utils';
 
 export default function App() {
     const store = useStore();
+    const navigate = useNavigate()
     const { user, app } = store;
+
     useEffectAsync(async () => {
         const hasSession = getHasSession(user);
         const getMe = async () => {
             return await http
-                .get('auth/me/test')
+                .get('auth/me')
                 .then((response) => {
                     return response;
                 })
                 .catch((error) => {
                     error.json().then((data) => {
-                        //notify(`Autorización: ${data.error}`, 'error');
+                        notify(`Autorización: ${data.error}`, 'error');
                     });
                     return null;
                 });
@@ -38,11 +42,18 @@ export default function App() {
             if (jwt !== null) {
                 const responseMe = await getMe();
                 if (responseMe != null) {
-                  store.saveUser(userFormatShort(responseMe));
+                    store.saveUser(userFormatShort(responseMe.user, 'client'));
+                    store.setModulePermissions(responseMe.modulesPermissions);
+                    store.saveRole(setRol(responseMe.user.rol, store));
                     getDriverStorage().setItem(
                         'currentUser',
-                        JSON.stringify(userFormatShort(responseMe))
+                        JSON.stringify(userFormatShort(responseMe.user))
                     );
+                    if(responseMe.user.rol != 'Client') {
+                        navigate('/dashboard')
+                    } else {
+                        navigate(`/${responseMe.user.id}/home`)
+                    }
                 }
             }
         };
@@ -52,15 +63,15 @@ export default function App() {
         getSidebar(store);
         store.setSession(hasSession);
     }, []);
-
+    
     if (!app.session) {
-        return <Login />;
+        return <Login />
     }
 
     return (
         <main>
             <Helmet>
-                <title>ServiceNow Admin</title>
+                <title>ServiceNow</title>
             </Helmet>
             <Layout />
         </main>

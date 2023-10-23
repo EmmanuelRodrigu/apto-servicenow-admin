@@ -11,9 +11,9 @@ const globalStore = () =>
             showSplash: true,
             debounceTime: 600,
             sidebar: true,
-            notifications: [],
             modulePermissions: [],
             session: false,
+            rol: ''
         },
         user: {
             jwt: null,
@@ -25,11 +25,11 @@ const globalStore = () =>
                     session: false,
                     titlePage: 'Admin',
                     currentPath: '/',
-                    showSplash: false, // Different an original
+                    showSplash: false,
                     debounceTime: 600,
                     sidebar: true,
-                    notifications: [],
                     modulePermissions: [],
+                    rol: ''
                 },
             })),
         setSession: (value) =>
@@ -41,6 +41,11 @@ const globalStore = () =>
             set((state) => {
                 state.app.sidebar = value;
                 return { state };
+            }),
+        setModulePermissions: (value) =>
+            set((state) => {
+              state.app.modulePermissions = value;
+              return { state };
             }),
         setCurrentPath: (value) =>
             set((state) => {
@@ -62,6 +67,11 @@ const globalStore = () =>
         saveUser: (value) =>
             set((state) => {
                 state.user.payload = value;
+                return { state };
+            }),
+        saveRole: (value) => 
+            set((state) => {
+                state.user.role = value;
                 return { state };
             }),
     }));

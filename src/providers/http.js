@@ -1,5 +1,15 @@
 import queryString from 'query-string';
 import { VITE_API_URL } from '@utils/constants';
+import { getDriverStorage } from '@utils'
+
+export const getToken = {
+    get (key) {
+      return getDriverStorage().getItem(key)
+    },
+    set (key, value) {
+      getDriverStorage().setItem(key, value)
+    }
+  }
 
 export const http = (() => {
     const apiUrl = VITE_API_URL;
@@ -34,18 +44,32 @@ export const http = (() => {
     }
 
     return {
-        get(url, params = {}, config = {}, tokenParam = null) {
-            config.url = url;
+        request (config = {}) {
+            const token = getToken.get('tokenApto')
+      
             return fetch(
-                `${apiUrl}/${url}?${queryString.stringify(params)}`,
-                withDefaultHeaders(config)
-            ).then(evaluateResponse);
+                      `${apiUrl}/${config.url}`,
+                      withDefaultHeaders(config, token)
+            ).then(evaluateResponse)
+          },
+        get(url, params = {}, config = {}, tokenParam = null) {
+            try {
+                const token = tokenParam == null ? getToken.get('tokenApto') : tokenParam;
+                config.url = url;
+                return fetch(
+                    `${apiUrl}/${url}?${queryString.stringify(params)}`,
+                    withDefaultHeaders(config, token)
+                ).then(evaluateResponse);
+            } catch(error) {
+                console.log(error);
+            }
         },
-        post(url, data, config = {}) {
+        post(url, data, config = {}, tokenParam = null) {
+            const token = tokenParam == null ? getToken.get('tokenApto') : tokenParam;
             config.url = url;
             config.method = 'POST';
             config.body = JSON.stringify(data);
-            return fetch(`${apiUrl}/${url}`, withDefaultHeaders(config)).then(
+            return fetch(`${apiUrl}/${url}`, withDefaultHeaders(config, token)).then(
                 evaluateResponse
             );
         },

@@ -6,7 +6,7 @@ export function useEffectAsync(effect, inputs) {
     }, inputs);
 }
 export function getDriverStorage() {
-    if (import.meta.env.VITE_LOCAL_STORAGE == 'true') {
+    if (import.meta.env.VITE_LOCAL_STORAGE === 'true') {
         return localStorage;
     }
     return sessionStorage;
@@ -56,13 +56,32 @@ export function getHasSession(user) {
     }
     return false;
 };
-export function userFormatShort(response) {
+
+export function canViewModules(modulePermissions, nameRoute) {
+    const search = modulePermissions.find(mo => mo.includes(nameRoute));
+    return search ? true : false
+  }
+
+export function userFormatShort(response, type) {
+    if(type === 'client') {
+        return {
+            id: response.id,
+            email: response.email,
+            name: response.name,
+            rol: response.rol
+        }
+    }
     return {
-        id: response?.id,
-        email: response?.email,
-        firstName: response?.firstName,
-        lastName: response?.lastName,
-        fullName: response?.fullName,
+        id: response.id,
+        email: response.email,
+        firstName: response.firstName,
+        lastName: response.lastName,
+        fullName: response.fullName,
         photo: response?.imageUrl,
     };
+}
+
+export function setRol(rol, store) {
+    store.app.rol = rol;
+    return true;
 }

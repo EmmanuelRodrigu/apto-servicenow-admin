@@ -39,3 +39,10 @@ body *{
 .btn-delete {
     @apply w-40 h-10 border-x border-y border-black text-white bg-black rounded-lg hover:bg-red-900;
 }
+.input-form {
+    @apply border-inherit w-full rounded-lg;
+}
+.section-form {
+    background: rgb(255,255,255);
+    background: linear-gradient(56deg, rgba(255,255,255,1) 67%, rgba(255,255,255,1) 88%, rgba(224,212,242,0.8016456582633054) 97%);
+}

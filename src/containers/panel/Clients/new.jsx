@@ -6,7 +6,6 @@ import Error from '@components/Error';
 import notify from "@utils/notify";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, useNavigate } from 'react-router-dom';
-import Modal from '@components/Modal';
 import Select from 'react-select'; 
 
 export default function NewClient() {
@@ -116,7 +115,6 @@ export default function NewClient() {
     const getTaxData = async () => {
         await http.get('api/clients/taxdata')
             .then((response) => {
-                console.log(response);
                 setOptionsTaxData(response)
             })
             .catch((error) => {

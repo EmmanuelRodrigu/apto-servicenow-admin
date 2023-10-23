@@ -1,0 +1,25 @@
+.pagination {
+    @apply flex mt-3;
+    & li:first-child {
+      @apply mr-2 text-grey5-custom;
+    }
+    & li:last-child {
+      @apply ml-2 text-grey5-custom;
+    }
+    .page-item {
+      border: 0.5px solid #e9ecef;
+      @apply rounded-full w-6 h-6 flex justify-center items-center font-normal text-xs leading-3 text-black6-custom mx-1;
+      .page-link {
+        @apply p-3 flex w-full h-full justify-center items-center;
+      }
+    }
+    .active {
+      @apply bg-black7-custom text-white;
+    }
+  }
+  @media (max-width: 789px) {
+    .pagination {
+      @apply overflow-x-auto pb-1;
+    }
+  }
+  

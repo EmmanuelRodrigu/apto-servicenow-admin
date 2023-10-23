@@ -13,7 +13,8 @@ export default function NewUser() {
     const [loading, setLoading] = useState(false);
     const options = [
         {value: 'MASTER', label: 'Master'},
-        {value: 'ADMIN', label: 'Admin'}
+        {value: 'ADMIN', label: 'Admin'},
+        {value: 'CLIENT', label: 'Cliente'},
     ];
 
     const schema = yup.object({

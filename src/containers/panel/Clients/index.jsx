@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { http } from '@providers/http.js';
 import notify from '@utils/notify';
 import { Link } from "react-router-dom";
-import Select from 'react-select';
 import { useStore } from '@store';
-import { FaMailBulk } from 'react-icons/fa';
+import { FaMailBulk, FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import Paginate from '@components/Paginate';
 import paramsState from "@components/Hooks/Params";
 import { useDebouncedCallback } from "use-debounce";
@@ -13,34 +12,42 @@ export default function Clients() {
     const store = useStore();
     const { app } = store;
     const [list, setList] = useState([]);
-    const {useCustomParams, paginate, setPaginate}  = paramsState();
-    const [params, updatedParams] = useCustomParams();
+    const {useCustomParams, location, paginate, setPaginate}  = paramsState();
+    const [params, updateParams] = useCustomParams();
     const [query, setQuery] = useState(params.query ? params.query : '');
     const [order, setOrder] = useState(params.order ? params.order : '');
-
-    const options = [
-        {value: 'ASC', label: 'ID Ascendente'},
-        {value: 'DESC', label: 'ID Descendente'},
-    ]
+    const [option, setOption ] = useState(params.option ? params.option : '');
+    const [arrowOrder, setArrowOrder] = useState({ id: 'ASC', name: 'ASC', rfc: 'ASC' })
 
     const getData = async () => {
         setList(null)
         await http.get('api/clients', params)
             .then((response) => {
-                setList(response);
+                setList(response.data);
+                setPaginate(response.paginate)
             })
             .catch((error) => {
                 notify(error, 'error')
             });
     };
 
-    
+    const changeArrow = (status, field) => {
+        setArrowOrder(
+            field == 'id' ? { id: status, name: arrowOrder.name, rfc: arrowOrder.rfc } : 
+            field == 'name' ? { id: arrowOrder.id, name: status, rfc: arrowOrder.rfc } : 
+            field == 'rfc' ? { id: arrowOrder.id, name: arrowOrder.name, rfc: status } : ''
+        )
+        setOrder(status);
+        setOption(field)
+        debounceQuery();
+    }
+
     useEffect(() => {
         getData();
-    }, [])
+    }, [location])
     
     const debounceQuery = useDebouncedCallback(() => {
-        updatedParams({query, order, page: 1});
+        updateParams({query, order, option, page: 1});
         getData()
     }, app.debounceTime)
 
@@ -49,7 +56,7 @@ export default function Clients() {
             <div className="flex justify-between pb-5">
                 <h1 className="title">Clientes</h1>
                 <Link className="w-40 text-center bg-black text-slate-50 py-3 rounded-full" to="/nuevo-cliente">Nuevo cliente</Link>
-            </div>
+            </div>  
             <div className="flex filter">
                 <div className="pt-5 pb-5 pl-10">
                     <p className="text-lg">Busqueda de clientes</p>
@@ -64,22 +71,6 @@ export default function Clients() {
                         value={query}
                     />
                 </div>
-                <div className="pt-5 pb-5 pl-20">
-                    <p className="text-lg">Filtros</p>
-                    <div className="flex">
-                        <div className="pr-5">
-                         <Select 
-                            className="text-sm text-center pr-5 h-8 w-48 rounded-md" 
-                            placeholder="Ordenar por" 
-                            options={options}
-                            onChange={(option) => {
-                                setOrder(option.value);
-                                debounceQuery();
-                            }}
-                         />
-                        </div>
-                    </div>
-                </div>
             </div>
             {!list ? '' : 
             <>
@@ -87,9 +78,31 @@ export default function Clients() {
                     <table className="table-responsive table-border table-border-inside">
                         <thead className="table-head">
                             <tr >
-                                <th>ID</th>
-                                <th>RFC</th>
-                                <th>Nombre</th>
+                                <th>
+                                    <div className="flex">
+                                        ID
+                                        <div className="pt-1 pl-1">
+                                            { arrowOrder.id == 'ASC' ? (<FaArrowUp onClick={() => { changeArrow('DESC', 'id') }} />) : (<FaArrowDown onClick={() => { changeArrow('ASC', 'id') }} />)}
+
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className="flex">
+                                        RFC
+                                        <div className="pt-1 pl-1">
+                                            { arrowOrder.rfc == 'ASC' ? (<FaArrowUp onClick={() => { changeArrow('DESC', 'rfc') }} />) : (<FaArrowDown onClick={() => { changeArrow('ASC', 'rfc') }} />)}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className="flex">
+                                        Nombre
+                                        <div className="pt-1 pl-1">
+                                            { arrowOrder.name == 'ASC' ? (<FaArrowUp onClick={() => { changeArrow('DESC', 'name') }} />) : (<FaArrowDown onClick={() => { changeArrow('ASC', 'name') }} />) }
+                                        </div>
+                                    </div>
+                                </th>
                                 <th>Contacto principal</th>
                                 <th>Correo electronico</th>
                                 <th>Telefono</th>
@@ -126,8 +139,8 @@ export default function Clients() {
 
             }
             <Paginate
-                items={list}
-                itemsPerPage={10}
+                paginate={paginate}
+                updateParams={updateParams}
             />
         </div>
             

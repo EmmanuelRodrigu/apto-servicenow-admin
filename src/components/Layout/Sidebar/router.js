@@ -6,7 +6,7 @@ export const routesList = [
         children: [
             {
                 name: 'Dashboard',
-                route: '',
+                route: 'dashboard',
             },
         ],
     },

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '@store';
 import { gapi } from 'gapi-script';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { getDriverStorage, userFormatShort } from "../../utils";
+import { getDriverStorage, userFormatShort, setRol } from "../../utils";
 import { VITE_CLIENT_ID } from '@utils/constants';
 
 export default function Login() {
@@ -33,12 +33,13 @@ export default function Login() {
         store.saveJwt(access_token)
     }
 
-    const saveUser = (user) => {
+    const saveUser = (user, type) => {
         getDriverStorage().setItem(
             'currentUser',
             JSON.stringify(userFormatShort(user))
         );
-        store.saveUser(userFormatShort(user));
+        store.saveUser(userFormatShort(user, type));
+        store.saveRole(setRol(user.rol, store))
     };
 
     const onSubmit = async (values) => {
@@ -48,10 +49,21 @@ export default function Login() {
                     notify(response.message, 'error');
                     navigate('/');
                 } else {
-                    store.setSession(true);
-                    saveToken(response.access_token)
-                    saveUser(response.user)
-                    navigate('/dashboard');
+                    if(response.user.rol === 'Client') {
+                        store.setSession(true);
+                        saveToken(response.access_token)
+                        store.setModulePermissions(response.modulesPermissions)
+                        console.log(response.user)
+                        saveUser(response.user ,'client')
+                        navigate(`/${response.user.id}/home`);
+
+                    } else {
+                        store.setSession(true);
+                        saveToken(response.access_token)
+                        store.setModulePermissions(response.modulesPermissions)
+                        saveUser(response.user)
+                        navigate('/dashboard');
+                    }
                 };
             }).catch((error) => {
                 notify(error, 'error')
@@ -59,6 +71,7 @@ export default function Login() {
     };
 
     const onSuccess = async (responseGoogle) => {
+        console.log(responseGoogle)
         document.getElementsByClassName('btn').hidden = true;
         store.setSession(true);
         saveToken(responseGoogle?.credential)
@@ -137,7 +150,7 @@ export default function Login() {
                     </div>
                 </div>
             </div>
-            <div className="hidden relative w-1/2 h-full lg:flex items-center justify-center bg-fuchsia-900">
+            <div className="login relative w-1/2 h-full lg:flex items-center justify-center">
                 <div className="w-80 h-80 bg-no-repeat bg-cover bg-center hidden sm:block bg-no-repeat" style={{backgroundImage: `url(${bgImg})`}}/>
             </div>
     </div>

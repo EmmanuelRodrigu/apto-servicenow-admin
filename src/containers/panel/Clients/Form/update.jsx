@@ -53,7 +53,7 @@ export default function UpdateClient({ data, id, navigate, optionsTaxData, defau
         resolver: yupResolver(schema),
         defaultValues: {
             person: data.dataClient.person,
-            tax_data: null,
+            tax_data: data.dataClient.dataTaxId,
             rfc: data.dataClient.rfc,
             bussiness_name: data.dataClient.name,
             reason_social: data.dataClient.reason_social,
@@ -156,6 +156,7 @@ export default function UpdateClient({ data, id, navigate, optionsTaxData, defau
                                             className={`w-max w-4/6 text-sm pt-2`}
                                             placeholder='Seleccionar una opcion'
                                             onChange={(option) => {
+                                                console.log(option.value)
                                                 setValue('tax_data', option.value)
                                             }}
                                         />

@@ -12,9 +12,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        display: ['Inter', 'sans-serif'],
-        heading: ['Inter', 'sans-serif'],
+        body: ['Mukta', 'sans-serif'],
+        display: ['Mukta', 'sans-serif'],
+        heading: ['Mukta', 'sans-serif'],
         },
         fontSize:{
           '32':'32px',
@@ -53,5 +53,7 @@ module.exports = {
         'white2': '#F5F5F5',
       },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms')
+  ],
 }

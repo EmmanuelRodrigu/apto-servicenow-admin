@@ -1,0 +1,20 @@
+.list {
+    @apply list-none flex gap-20;
+}
+
+.link {
+    @apply text-sm text-white font-semibold font-sans hover:border-y-2 border-white;
+}
+
+.name {
+    position: absolute;
+    top: 70%;
+    font-size: 11px;
+    color: #00fffc;
+    font-weight: 800;
+}
+
+.bg-navbar {
+    background: rgb(18,13,102);
+    background: linear-gradient(90deg, rgba(18,13,102,1) 70%, rgba(133,156,218,0.8800770308123249) 90%, rgba(135,51,148,1) 97%);
+}

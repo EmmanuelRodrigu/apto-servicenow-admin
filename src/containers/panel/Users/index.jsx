@@ -7,44 +7,54 @@ import Paginate from '@components/Paginate';
 import paramsState from "@components/Hooks/Params";
 import { useDebouncedCallback } from "use-debounce";
 import { useStore } from '@store';
+import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 
 export default function Users() {
     const store = useStore();
     const { app } = store;
     const [list, setList] = useState([]);
-    const {useCustomParams, paginate, setPaginate}  = paramsState();
-    const [params, updatedParams] = useCustomParams();
+    const {useCustomParams, location, paginate, setPaginate}  = paramsState();
+    const [params, updateParams] = useCustomParams();
     const [query, setQuery] = useState(params.query ? params.query : '');
     const [order, setOrder] = useState(params.order ? params.order : '');
     const [rol, setRol] = useState(params.rol ? params.rol : '');
+    const [option, setOption ] = useState(params.option ? params.option : '');
+    const [arrowOrder, setArrowOrder] = useState({ id: 'ASC', full_name: 'ASC', email: 'ASC'})
 
     const optionsRol = [
         { value: 'MASTER', label: 'Master' },
         { value: 'ADMIN', label: 'Admin' },
     ];
 
-    const optionsOrder = [
-        { value: 'ASC', label: 'ID Ascendente'},
-        { value: 'DESC', label: 'ID Descendente'},
-    ]
-
     const getData = async () => {
         await http.get('api/users', params)
             .then((response) => {
-                setList(response);
-                console.log(response)
+                setList(response.data);
+                setPaginate(response.paginate)
             })
             .catch((error) => {
                 notify(error, 'error')
             });
     };
 
+    const changeArrow = (status, field) => {
+        setArrowOrder(
+            field == 'id' ? { id: status, full_name: arrowOrder.full_name, email: arrowOrder.email } : 
+            field == 'full_name' ? { id: arrowOrder.id, full_name: status, email: arrowOrder.email } : 
+            field == 'email' ? { id: arrowOrder.id, full_name: arrowOrder.full_name, email: status } :
+            ''
+        )
+        setOrder(status);
+        setOption(field)
+        debounceQuery();
+    }
+
     useEffect(() => {
         getData();
-    }, [])
+    }, [location])
 
     const debounceQuery = useDebouncedCallback(() => {
-        updatedParams({query, order, page: 1});
+        updateParams({query, order, option, rol, page: 1});
         getData()
     }, app.debounceTime)
 
@@ -77,19 +87,9 @@ export default function Users() {
                         <div>
                             <Select
                                 className="text-sm w-40"
+                                isClearable={true}
                                 options={optionsRol}
                                 placeholder="Rol"
-                                onChange={(option) => {
-                                    setRol(option.value);
-                                    debounceQuery();
-                                }}
-                            />
-                        </div>
-                        <div className="pl-5"> 
-                            <Select
-                                className="text-sm w-40"
-                                options={optionsOrder}
-                                placeholder="Ordenar por"
                                 onChange={(option) => {
                                     setRol(option.value);
                                     debounceQuery();
@@ -105,9 +105,30 @@ export default function Users() {
                     <table className="table-responsive table-border table-border-inside">
                         <thead className="table-head">
                             <tr >
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Correo</th>
+                                <th>
+                                    <div className="flex">
+                                        ID
+                                        <div className="pt-1 pl-1">
+                                            { arrowOrder.id == 'ASC' ? (<FaArrowUp onClick={() => { changeArrow('DESC', 'id') }} />) : (<FaArrowDown onClick={() => { changeArrow('ASC', 'id') }} />)}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className="flex">
+                                        Nombre
+                                        <div className="pt-1 pl-1">
+                                            { arrowOrder.full_name == 'ASC' ? (<FaArrowUp onClick={() => { changeArrow('DESC', 'full_name') }} />) : (<FaArrowDown onClick={() => { changeArrow('ASC', 'full_name') }} />)}
+                                        </div>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className="flex">
+                                        Correo electronico
+                                        <div className="pt-1 pl-1">
+                                            { arrowOrder.email == 'ASC' ? (<FaArrowUp onClick={() => { changeArrow('DESC', 'email') }} />) : (<FaArrowDown onClick={() => { changeArrow('ASC', 'email') }} />)}
+                                        </div>
+                                    </div>
+                                </th>
                                 <th>Fecha de creacion</th>
                                 <th>Rol</th>
                                 <th>Acciones</th>
@@ -123,9 +144,9 @@ export default function Users() {
                                     </Link>
                                 </td>
                                 <td>{v.full_name}</td>
-                                <td>{v.email}</td>
-                                <td>{v.created_at}</td>
-                                <td>{v.rol == 1 ? 'MASTER': 'ADMIN'}</td>
+                                <td>{v.accountUser.email}</td>
+                                <td>{v.accountUser.created_at}</td>
+                                <td>{v.rolId == 1 ? 'MASTER': 'ADMIN'}</td>
                                 <td>{}</td>
                             </tr>
                         ))
@@ -140,8 +161,8 @@ export default function Users() {
 
             }
             <Paginate
-                items={list}
-                itemsPerPage={10}
+                paginate={paginate}
+                updateParams={updateParams}
             />
         </div>
             
