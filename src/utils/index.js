@@ -77,7 +77,7 @@ export function userFormatShort(response, type) {
         firstName: response.firstName,
         lastName: response.lastName,
         fullName: response.fullName,
-        photo: response?.imageUrl,
+        photo: response.photo,
     };
 }
 

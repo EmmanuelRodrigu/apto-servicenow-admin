@@ -20,6 +20,12 @@ export default function Login() {
     const [show, setShow] = useState(false);
     const clientId = VITE_CLIENT_ID;
     const handleClick = () => setShow(!show);
+    const modules = [
+        'Dashboard',
+        'News',
+        'Projects',
+        'Requests',
+    ]
 
     const schema = yup.object({
         email: yup.string().email('Debe ser un correo electronico valido').required('El correo electronico es requerido'),
@@ -53,7 +59,6 @@ export default function Login() {
                         store.setSession(true);
                         saveToken(response.access_token)
                         store.setModulePermissions(response.modulesPermissions)
-                        console.log(response.user)
                         saveUser(response.user ,'client')
                         navigate(`/${response.user.id}/home`);
 
@@ -70,12 +75,27 @@ export default function Login() {
             })
     };
 
+    function parseJwt (token) {
+        var base64Url = token.split('.')[1];
+        var base64 = base64Url.replace('-', '+').replace('_', '/');
+        return JSON.parse(window.atob(base64));
+    };
+
     const onSuccess = async (responseGoogle) => {
-        console.log(responseGoogle)
         document.getElementsByClassName('btn').hidden = true;
+        const payload = parseJwt(responseGoogle.credential);
+        const user = {
+            id: null,
+            email: payload.email,
+            firstName: payload.given_name,
+            lastName: payload.family_name,
+            fullName: payload.name,
+            photo: payload.picture,
+        }
         store.setSession(true);
-        saveToken(responseGoogle?.credential)
-        saveUser(responseGoogle?.profileObj)
+        saveToken(responseGoogle.credential);
+        saveUser(userFormatShort(user, 'admin'));
+        store.setModulePermissions(modules);
         navigate('/dashboard');
     };
 
@@ -100,7 +120,7 @@ export default function Login() {
                     <h1 className='text-5xl font-semibold'>Iniciar sesión</h1>
                     <p className='font-medium text-lg text-gray-500 mt-4'>ServiceNow</p>
                     <div className='mt-8 mb-2'>
-                        <form className="" onSubmit={handleSubmit(onSubmit)}>
+                        <form onSubmit={handleSubmit(onSubmit)}>
                             <div className='flex flex-col'>
                                 <label className='text-lg font-medium'>Correo electrónico</label>
                                 <input 
@@ -138,13 +158,17 @@ export default function Login() {
                                 <button
                                     className='active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4 bg-black rounded-xl text-white font-bold text-lg'>Iniciar sesión
                                 </button>
-                                <GoogleOAuthProvider clientId={clientId}>
-                                    <GoogleLogin
-                                        onSuccess={onSuccess}
-                                        onError={onError}
-                                        useOneTap
-                                    />
-                                </GoogleOAuthProvider>
+                                <div className="">
+                                    <p className="text-lg py-2">O inicia sesion con una cuenta de Google</p>
+                                    <GoogleOAuthProvider clientId={clientId}>
+                                        <GoogleLogin
+                                            width={20}
+                                            onSuccess={onSuccess}
+                                            onError={onError}
+                                            useOneTap
+                                        />
+                                    </GoogleOAuthProvider>
+                                </div>
                             </div>
                         </form>
                     </div>

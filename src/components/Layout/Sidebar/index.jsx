@@ -20,7 +20,7 @@ import { getDriverStorage } from '../../../utils';
 export default function Sidebar({ sidebar, store }) {
     const navigate = useNavigate();
     const location = useLocation();
-    const { app } = store;
+    const { app, user } = store;
     const [modalShow, setModalShow] = useState(false);
 
     const modalHandler = () => {
@@ -146,7 +146,7 @@ export default function Sidebar({ sidebar, store }) {
             <div className={`footer ${sidebar == false ? 'hidden-sidebar' : ''}`}>
                     <div className='footer-card'>
                         <div className='mr-2 footer-img'>
-                            <img src={defaultPhoto} alt="imagen usuario" />
+                            <img src={user.payload.photo ? user.payload.photo : defaultPhoto} alt="imagen usuario" />
                         </div>
                         <div className='footer-user'>
                             <div className='text-white font-medium text-sm'>{'Emmanuel'}</div>

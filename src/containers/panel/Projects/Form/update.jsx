@@ -7,8 +7,10 @@ import Error from '@components/Error';
 import notify from "@utils/notify";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link  } from 'react-router-dom';
+import Modal from '@components/Modal';
 
 export default function UpdateProject({ data, id, navigate }) {
+    const [showModal, setShowModal] = useState(false);
 
     const schema = yup.object({
         name: yup.string().required('El campo nombre proyecto es requerido'),
@@ -16,6 +18,10 @@ export default function UpdateProject({ data, id, navigate }) {
         client: yup.string().required('El campo cliente es requerido'),
         type_project: yup.array().required().min(1, 'El campo tipo de proyecto debe contener al menos 1 elemento')
     }).required()
+
+    const modalHandler = () => {
+        setShowModal(!showModal);
+    };
 
     const {
         setValue,
@@ -33,7 +39,8 @@ export default function UpdateProject({ data, id, navigate }) {
     });
 
     const onSubmit = async (values) => {
-        http.put(`api/projects/update/${id}`, values)
+        console.log('si')
+        await http.put(`api/projects/update/${id}`, values)
             .then((response) => {
                 if(response < 400) {
                     notify('Proyecto actualizado', 'success');
@@ -47,10 +54,29 @@ export default function UpdateProject({ data, id, navigate }) {
             });
     };
 
+    const deleteProject = async () => {
+        await http.delete(`api/projects/delete/${id}`)
+            .then((response) => {
+                if(response) {
+                    notify('proyecto eliminado', 'success');
+                    navigate('/proyectos');
+                } else {
+                    notify('Error', 'error');
+                }
+            })
+            .catch((error) => {
+                notify(error, 'error')
+            })
+    };
+
     return (
         <div>
+            <div className="flex flex-cols-2 justify-between pr-32">
+                <h1 className="title">Detalles - Editar proyecto</h1>
+                <button onClick={() => { setShowModal(true) }} className='btn-delete'>Eliminar proyecto</button>
+            </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
             <div className='pt-6'>
-                <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="docker border-x border-y w-11/12">
                             <div className="pl-10 pr-10 pt-6 pb-4">
                                 <div className='flex p-2'>
@@ -73,7 +99,7 @@ export default function UpdateProject({ data, id, navigate }) {
                                         <h3 className='text-input'>Cliente*</h3>
                                         <Select
                                             isClearable={true}
-                                            defaultInputValue={data.clientOfProject.label}
+                                            defaultInputValue={data?.clientOfProject?.label}
                                             options={data.clients}
                                             placeholder="Selecciona el cliente"
                                             className='w-full w-2/3 text-sm pt-2'
@@ -102,10 +128,23 @@ export default function UpdateProject({ data, id, navigate }) {
                             <div className='pr-4'>
                                 <button type='submit' className='btn-primary'>Guardar</button>
                             </div>
-                            <Link to={'/proyectos'} className='btn-cancel'>Cancelar</Link>
                         </div>
-                </form>
             </div>
+            </form>
+            <Modal
+                isOpen={showModal}
+                actionOpenOrClose={() => {
+                    setModalShow();
+                }}
+                title={`¿Estás seguro de eliminar al cliente?`}
+                size=""
+                description="Al aceptar se eliminara el proeycto y no se podra recuperar."
+            >
+                <div className='flex justify-center gap-3'>
+                    <button className="w-full" onClick={deleteProject}>Aceptar</button>
+                    <button className="w-full" onClick={modalHandler}>Cancelar</button>
+                </div>
+            </Modal>
         </div>
     )
 }
