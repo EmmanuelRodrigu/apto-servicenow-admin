@@ -63,7 +63,7 @@ export function canViewModules(modulePermissions, nameRoute) {
   }
 
 export function userFormatShort(response, type) {
-    if(type === 'client') {
+    if(type != 'google') {
         return {
             id: response.id,
             email: response.email,

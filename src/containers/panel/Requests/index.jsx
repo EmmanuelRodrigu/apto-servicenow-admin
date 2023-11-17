@@ -3,10 +3,11 @@ import { http } from '@providers/http.js';
 import notify from '@utils/notify';
 import { Link } from "react-router-dom";
 import { useStore } from '@store';
-import { FaMailBulk, FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import Paginate from '@components/Paginate';
 import paramsState from "@components/Hooks/Params";
 import { useDebouncedCallback } from "use-debounce";
+import Modal from '@components/Modal';
 
 export default function Request() {
     const store = useStore();
@@ -17,7 +18,7 @@ export default function Request() {
     const [query, setQuery] = useState(params.query ? params.query : '');
     const [order, setOrder] = useState(params.order ? params.order : '');
     const [option, setOption ] = useState(params.option ? params.option : '');
-    const [arrowOrder, setArrowOrder] = useState({ id: 'ASC', name_project: 'ASC', title: 'ASC' })
+    const [arrowOrder, setArrowOrder] = useState({ id: 'ASC', name_project: 'ASC', summary: 'ASC' });
 
     const getData = async () => {
         setList(null)
@@ -25,7 +26,6 @@ export default function Request() {
             .then((response) => {
                 setList(response.data);
                 setPaginate(response.paginate)
-                console.log(response.data)
             })
             .catch((error) => {
                 notify(error, 'error')
@@ -34,9 +34,9 @@ export default function Request() {
 
     const changeArrow = (status, field) => {
         setArrowOrder(
-            field == 'id' ? { id: status, name_project: arrowOrder.name_project, title: arrowOrder.title } : 
-            field == 'title' ? { id: arrowOrder.id, name_project: arrowOrder.name_project, title: status } : 
-            field == 'name_project' ? { id: arrowOrder.id, name_project: status, title: arrowOrder.title } : ''  
+            field == 'id' ? { id: status, name_project: arrowOrder.name_project, summary: arrowOrder.summary } : 
+            field == 'summary' ? { id: arrowOrder.id, name_project: arrowOrder.name_project, summary: status } : 
+            field == 'name_project' ? { id: arrowOrder.id, name_project: status, summary: arrowOrder.summary } : ''  
         )
         setOrder(status);
         setOption(field)
@@ -74,8 +74,8 @@ export default function Request() {
             </div>
             {!list ? '' : 
             <>
-                <div className="pt-5">
-                    <table className="table-responsive table-border table-border-inside">
+                <div className="pt-5 table-responsive table-border table-border-inside">
+                    <table>
                         <thead className="table-head">
                             <tr >
                                 <th>
@@ -91,7 +91,7 @@ export default function Request() {
                                     <div className="flex">
                                         Titulo
                                         <div className="pt-1 pl-1">
-                                            { arrowOrder.title == 'ASC' ? (<FaArrowUp onClick={() => { changeArrow('DESC', 'title') }} />) : (<FaArrowDown onClick={() => { changeArrow('ASC', 'title') }} />)}
+                                            { arrowOrder.summary == 'ASC' ? (<FaArrowUp onClick={() => { changeArrow('DESC', 'summary') }} />) : (<FaArrowDown onClick={() => { changeArrow('ASC', 'summary') }} />)}
                                         </div>
                                     </div>
                                 </th>
@@ -103,10 +103,9 @@ export default function Request() {
                                         </div>
                                     </div>
                                 </th>
-                                <th>Asignado a</th>
                                 <th>Fecha creacion</th>
                                 <th>Estatus</th>
-                                <th>Acciones</th>
+                                <th>Tipo de solicitud</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -118,14 +117,11 @@ export default function Request() {
                                         {v.id}
                                     </Link>
                                 </td>
-                                <td className="pt-1">{v.title}</td>
+                                <td className="pt-1">{v.summary}</td>
                                 <td>{v.project.name}</td>
-                                <td>{v.assign_to}</td>
                                 <td>{v.created_at}</td>
                                 <td>{v.status}</td>
-                                <td className="flex justify-left">
-                                    <FaMailBulk className="h-6" onClick={() => console.log('email')}/>
-                                </td>
+                                <td>{v.type_request}</td>
                             </tr>
                         ))
 

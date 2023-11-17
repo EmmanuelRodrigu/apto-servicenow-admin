@@ -17,7 +17,7 @@ export const routesList = [
         children: [
             {
                 name: 'Noticias',
-                rote: 'noticias',
+                route: 'noticias',
             }
         ]
     },
@@ -75,17 +75,6 @@ export const routesList = [
                 name: 'Crear usuario',
                 route: 'crear-usuario',
             },
-        ],
-    },
-    {
-        name: 'Administrador de facturas',
-        icon: 'settings',
-        haveChildren: false,
-        children: [
-            {
-                name: 'Listado de pagos',
-                route: 'listado-de-pagos',
-            }
         ],
     },
 ]

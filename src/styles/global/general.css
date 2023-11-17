@@ -15,11 +15,19 @@ body {
 body *{
     font-family: 'Mukta', sans-serif;
 }
+
+.content-uploads {
+    border-radius: 24px;
+    border: 2px dashed #848080;
+    background-color: #f5f5f5;
+    height: 150px;
+}
+
 .title {
     @apply mb-2 text-4xl font-bold text-fuchsia-800 pr-5;
 }
 .subtitle {
-    @apply text-indigo-950 font-bold text-3xl text-fuchsia-950 pr-5;
+    @apply text-indigo-950 font-bold text-2xl text-fuchsia-950 pr-5;
 }
 .text-input {
     @apply text-xl text-violet-950;
@@ -28,7 +36,7 @@ body *{
     @apply w-max w-3/4 border-2 border-gray-100 rounded-xl p-2 mt-1 bg-transparent;
 }
 .btn-primary {
-    @apply w-40 h-10 border-x border-y border-black text-white bg-indigo-500 rounded-lg hover:bg-black;
+    @apply w-40 h-10 border-x border-y border-black text-white bg-violet-800 rounded-lg hover:bg-black;
 }
 .btn-cancel {
     @apply w-40 h-10 border-x border-y border-black bg-slate-50 rounded-lg text-center pt-2;

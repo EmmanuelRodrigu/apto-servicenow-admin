@@ -39,7 +39,6 @@ export default function UpdateProject({ data, id, navigate }) {
     });
 
     const onSubmit = async (values) => {
-        console.log('si')
         await http.put(`api/projects/update/${id}`, values)
             .then((response) => {
                 if(response < 400) {
@@ -75,61 +74,62 @@ export default function UpdateProject({ data, id, navigate }) {
                 <h1 className="title">Detalles - Editar proyecto</h1>
                 <button onClick={() => { setShowModal(true) }} className='btn-delete'>Eliminar proyecto</button>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-            <div className='pt-6'>
-                        <div className="docker border-x border-y w-11/12">
-                            <div className="pl-10 pr-10 pt-6 pb-4">
-                                <div className='flex p-2'>
-                                    <img className='h-14 h-14' src={`${data.dataProject.avatar_url}`} />
-                                    <p className='text-xl p-2'>Tipo de proyecto: { data.dataProject.type_project } </p>
-                                </div>
-                                <div className='flex flex-cols-2 justify-between'>
-                                    <div className='pb-10 w-2/4'>
-                                        <h3 className='text-input'>Nombre proyecto*</h3>
-                                        <input
-                                            type="text"
-                                            placeholder="Escribe el nombre de proyecto"
-                                            className={`input-form ${errors?.name ? 'error': ''}`}
-                                            { ...register('name') }
-                                        />
-                                        <Error error={errors?.name} />
-                                    </div>
-                                </div>
-                                    <div className='pb-10 w-2/4'>
-                                        <h3 className='text-input'>Cliente*</h3>
-                                        <Select
-                                            isClearable={true}
-                                            defaultInputValue={data?.clientOfProject?.label}
-                                            options={data.clients}
-                                            placeholder="Selecciona el cliente"
-                                            className='w-full w-2/3 text-sm pt-2'
-                                            onChange={(option) => {
-                                                if(option != null) {
-                                                    setValue('client', option.value)
-                                                } else{
-                                                    setValue('client')
-                                                }
-                                            }}
-                                        />
-                                        <Error error={errors?.client} />
-                                    </div>
-                                    <div className='pb-10 w-2/4'>
-                                        <h3 className='text-input'>Descripcion</h3>
-                                        <textarea
-                                            placeholder="Descripcion"
-                                            className='input-form'
-                                            { ...register('description') }
-                                        />
-                                        <Error error={errors?.description} />
-                                    </div>
+            <form method='POST' onSubmit={handleSubmit(onSubmit)}>
+                <div className='pt-6'>
+                    <div className="docker border-x border-y w-11/12">
+                        <div className="pl-10 pr-10 pt-6 pb-4">
+                            <div className='flex p-2'>
+                                <img className='h-14 h-14' src={`${data.dataProject.avatar_url}`} />
+                                <p className='text-xl p-2'>Tipo de proyecto: { data.dataProject.type_project } </p>
                             </div>
-                        </div>
-                        <div className='flex justify-end pt-10 pr-40 pb-6'>
-                            <div className='pr-4'>
-                                <button type='submit' className='btn-primary'>Guardar</button>
+                            <div className='flex flex-cols-2 justify-between'>
+                                <div className='pb-10 w-2/4'>
+                                    <h3 className='text-input'>Nombre proyecto*</h3>
+                                    <input
+                                        type="text"
+                                        placeholder="Escribe el nombre de proyecto"
+                                        className={`input-form ${errors?.name ? 'error': ''}`}
+                                        { ...register('name') }
+                                    />
+                                    <Error error={errors?.name} />
+                                </div>
                             </div>
+                                <div className='pb-10 w-2/4'>
+                                    <h3 className='text-input'>Cliente*</h3>
+                                    <Select
+                                        isClearable={true}
+                                        defaultInputValue={data?.clientOfProject?.label}
+                                        options={data.clients}
+                                        placeholder="Selecciona el cliente"
+                                        className='w-full w-2/3 text-sm pt-2'
+                                        onChange={(option) => {
+                                            if(option != null) {
+                                                setValue('client', option.value)
+                                            } else{
+                                                setValue('client')
+                                            }
+                                        }}
+                                    />
+                                    <Error error={errors?.client} />
+                                </div>
+                                <div className='pb-10 w-2/4'>
+                                    <h3 className='text-input'>Descripcion</h3>
+                                    <textarea
+                                        placeholder="Descripcion"
+                                        className='input-form'
+                                        { ...register('description') }
+                                    />
+                                    <Error error={errors?.description} />
+                                </div>
                         </div>
-            </div>
+                    </div>
+                    <div className='flex justify-end pt-10 pr-40 pb-6'>
+                        <div className='pr-4'>
+                            <button type='submit' className='btn-primary'>Guardar</button>
+                        </div>
+                        <Link to={'/proyectos'} className='btn-cancel'>Cancelar</Link>
+                    </div>
+                </div>
             </form>
             <Modal
                 isOpen={showModal}

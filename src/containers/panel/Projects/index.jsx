@@ -7,17 +7,19 @@ import Paginate from '@components/Paginate';
 import paramsState from "@components/Hooks/Params";
 import { useDebouncedCallback } from "use-debounce";
 import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import imgLoading from "@assets/loading.gif";
 
 export default function Projects() {
     const store = useStore();
     const { app } = store;
     const [list, setList] = useState([]);
+    const [loading, setLoading] = useState(false)
     const {useCustomParams, location, paginate, setPaginate} = paramsState();
     const [params, updateParams] = useCustomParams();
     const [query, setQuery] = useState(params.query ? params.query : '');
     const [order, setOrder] = useState(params.order ? params.order : '');
     const [option, setOption ] = useState(params.option ? params.option : '');
-    const [arrowOrder, setArrowOrder] = useState({ id: 'ASC', name: 'ASC', rfc: 'ASC', name_client: 'ASC' })
+    const [arrowOrder, setArrowOrder] = useState({ id: 'ASC', name: 'ASC', rfc: 'ASC', name_client: 'ASC' });
 
     const getData = async () => {
         await http.get('api/projects', params)
@@ -44,6 +46,7 @@ export default function Projects() {
     }
 
     const syncProjects = async () => {
+        setLoading(true)
         http.get('api/projects/sync')
             .then((response) => {
                 if(response.sync) {
@@ -54,7 +57,8 @@ export default function Projects() {
             })
             .catch((error) => {
                 notify(error, 'error')
-            })
+            });
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -68,17 +72,17 @@ export default function Projects() {
 
     return (
         <div className="" >
-            <div className="flex justify-between pb-5">
+            <div className="flex justify-between pb-5 w-1/7 h-18">
                 <h1 className="title">Proyectos</h1>
                 <button 
-                    className="p-2 bg-black text-lg text-white rounded-lg"
+                    className="p-2 bg-black text-lg text-white rounded-lg text-center"
                     onClick={syncProjects}
                     >
-                    Sincronizar proyectos
+                    { loading ? <img className="w-10 h-10" src={imgLoading} /> : "Sincronizar proyectos"}
                 </button>
             </div>
-            <div className="flex filter">
-                <div className="pt-5 pb-5 pl-10">
+            <div className="flex filter flex-wrap">
+                <div className="pt-5 pb-5 pl-10 relative">
                     <p className="text-lg">Busqueda de proyectos</p>
                     <input 
                         className="text-sm text-left pl-2 h-8 w-60 rounded-md" 
@@ -90,9 +94,9 @@ export default function Projects() {
                         }}
                     />
                 </div>
-                <div className="pt-5 pb-5 pl-20">
+                <div className="pt-5 pb-5 pl-10">
                     <p className="text-lg">Filtros</p>
-                    <div className="flex">
+                    <div className=" relative">
                         <div className="pr-5">
                          <input 
                             className="text-sm text-center pr-5 h-8 w-48 rounded-md" 
@@ -108,8 +112,8 @@ export default function Projects() {
             </div>
             {!list ? '' : 
             <>
-                <div className="pt-5">
-                    <table className="table-responsive table-border table-border-inside">
+                <div className="pt-5 table-responsive table-border table-border-inside">
+                    <table>
                         <thead className="table-head">
                             <tr >
                                 <th>

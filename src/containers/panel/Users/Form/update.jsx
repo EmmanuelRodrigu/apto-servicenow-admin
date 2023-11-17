@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { http } from '@providers/http';
 import Select from 'react-select';
@@ -6,14 +6,14 @@ import * as yup from 'yup';
 import Error from '@components/Error';
 import notify from "@utils/notify";
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-export default function NewUser() {
-    const navigate = useNavigate()
+export default function UpdateUser({ data, id, navigate }) {
     const [loading, setLoading] = useState(false);
+
     const options = [
-        {value: 'MASTER', label: 'Master'},
-        {value: 'ADMIN', label: 'Admin'},
+        {value: 1, label: 'Master'},
+        {value: 2, label: 'Admin'}
     ];
 
     const schema = yup.object({
@@ -22,57 +22,55 @@ export default function NewUser() {
         second_last_name: yup.string().required('El segundo apellido de usuario es requerido'),
         email: yup.string().email('Debe ser un correo electronico valido').required('El correo electronico es requerido'),
         password: yup.string().required('La contraseña es requerida'),
-        rol: yup.string().required('El rol es requerido'),
+        rol: yup.number().required('El rol es requerido'),
     }).required();
 
     const {
         setValue,
         register, 
-        handleSubmit, 
+        handleSubmit,
+        clearErrors,
         formState: {errors}, 
     } = useForm({
         resolver: yupResolver(schema),
         defaultValues: {
-            name: '',
-            first_last_name: '',
-            second_last_name: '',
-            email: '',
-            password: 'Apto1234',
-            rol: '',
+            name: data.dataUser.name,
+            first_last_name: data.dataUser.first_last_name,
+            second_last_name: data.dataUser.second_last_name,
+            email: data.profileUser.email,
+            password: '',
+            rol: data.rol.value,
         }
     });
-
+    
     const onSubmit = async (values) => {
         setLoading(true);
-        await http.post('api/users/create', values)
+        await http.put(`api/users/update/${id}`, values)
             .then((response) => {
-                if(response.status){
-                    notify(response.message, 'error');
-                } else {
-                    notify('Usuario creado exitosamente', 'success')
+                if(response){
+                    notify('Usuario actualizado', 'success');
                     navigate('/usuarios');
-                }
+                } else {
+                    notify('Error al crear usuario', 'error');
+                };
             })
             .catch((error) => {
                 notify(error, 'error');
             });
     };
 
-    useEffect(() => {
-        
-    }, [])
-
     return (
-        <div className="">
-            <h1 className="title">Crear nuevo usuario</h1>
+        <div>
+            <h1 className="title">Detalles / Editar usuario</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className='flex flex-cols-2 justify-evenly pt-10'>
-                    <div className='docker border-x border-y w-10/12 '>
-                        <div className='pl-10 pr-10 pt-6 pb-4'>
+                    <div className='docker border-x border-y w-10/12'>
+                        <div className='pl-10 pr-10 pt-4 pb-4'>
                             <h2 className='subtitle pb-10 text-left'>Informacion personal</h2>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Nombre del usuario*</h3>
                                 <input 
+                                    defaultValue={data.dataUser.name}
                                     type='text' 
                                     placeholder='Escribe el nombre' 
                                     className={`input-form`}
@@ -82,7 +80,8 @@ export default function NewUser() {
                             </div>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Primer apellido del usuario*</h3>
-                                <input 
+                                <input
+                                    defaultValue={data.dataUser.first_last_name}
                                     type='text' 
                                     placeholder='Escribe el apellido' 
                                     className='input-form'
@@ -93,6 +92,7 @@ export default function NewUser() {
                             <div className='pb-10'>
                                 <h3 className='text-input'>Segundo apellido del usuario*</h3>
                                 <input 
+                                    defaultValue={data.dataUser.second_last_name}
                                     type='text' 
                                     placeholder='Escribe el apellido' 
                                     className='input-form'
@@ -105,7 +105,8 @@ export default function NewUser() {
                             <h2 className='subtitle text-left pb-10'>Perfil</h2>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Correo electronico*</h3>
-                                <input 
+                                <input
+                                    defaultValue={data.profileUser.email} 
                                     type='text' 
                                     placeholder='email@email.com' 
                                     className='input-form'
@@ -115,8 +116,7 @@ export default function NewUser() {
                             </div>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Contraseña*</h3>
-                                <input 
-                                    placeholder='Apto1234'
+                                <input
                                     className='input-form'
                                     { ...register('password') }
                                 />
@@ -124,12 +124,18 @@ export default function NewUser() {
                             </div>
                             <div className='pb-10'>
                                 <h3 className='text-input'>Rol del usuario*</h3>
-                                <Select 
+                                <Select
+                                    isClearable={true}
+                                    defaultInputValue={data.rol.label}
                                     placeholder='Selecciona una opcion'
-                                    options={options} 
-                                    className='w-3/12'
+                                    options={options}
                                     onChange={(option) => {
-                                        setValue('rol', option.value);
+                                        if(option != null) {
+                                            setValue('rol', option.value);
+                                            clearErrors('rol')
+                                        } else {
+                                            setValue('rol')
+                                        }
                                     }}
                                 />
                                 <Error error={errors?.rol} />
@@ -139,7 +145,7 @@ export default function NewUser() {
                 </div>
                 <div className='flex justify-end pt-10 pr-40 pb-6'>
                     <div className='pr-4'>
-                        <button type='submit' className='btn-primary'>Crear usuario</button>
+                        <button type='submit' className='btn-primary'>Guardar</button>
                     </div>
                     <Link to={'/usuarios'} className='btn-cancel'>Cancelar</Link>
                 </div>

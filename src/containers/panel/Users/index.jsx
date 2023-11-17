@@ -64,8 +64,8 @@ export default function Users() {
                 <h1 className="title">Usuarios</h1>
                 <Link className="w-40 text-center bg-black text-slate-50 py-2 rounded-full" to="/crear-usuario">Nuevo usuario</Link>
             </div>
-            <div className="flex filter">
-                <div className="pt-5 pb-5 pl-10">
+            <div className="flex filter flex-wrap gap-x-5">
+                <div className="pt-5 pb-5 pl-10 relative">
                     <p className="text-lg">Busqueda de usuarios</p>
                     <input 
                         className="text-sm text-left pl-2 h-8 w-60 rounded-md" 
@@ -78,13 +78,13 @@ export default function Users() {
                         value={query}
                     />
                 </div>
-                <div className="pt-5 pb-5 pl-20">
+                <div className="pt-5 pb-5 pl-10">
                     <p className="text-lg">Filtros</p>
-                    <div className="flex">
-                        <div className="pr-5">
+                    <div className="flex flex-wrap">
+                        <div className="pr-5 relative">
                          <input className="text-sm text-center pr-5 h-8 w-48 rounded-md" placeholder="Fecha de creacion" type="date"></input>
                         </div>
-                        <div>
+                        <div className="relative">
                             <Select
                                 className="text-sm w-40"
                                 isClearable={true}
@@ -101,8 +101,8 @@ export default function Users() {
             </div>
             {!list ? '' : 
             <>
-                <div className="pt-5">
-                    <table className="table-responsive table-border table-border-inside">
+                <div className="pt-5 table-responsive table-border table-border-inside">
+                    <table>
                         <thead className="table-head">
                             <tr >
                                 <th>

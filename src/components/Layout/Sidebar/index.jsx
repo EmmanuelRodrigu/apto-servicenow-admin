@@ -21,10 +21,15 @@ export default function Sidebar({ sidebar, store }) {
     const navigate = useNavigate();
     const location = useLocation();
     const { app, user } = store;
-    const [modalShow, setModalShow] = useState(false);
+    const [modalShowLogOut, setModalShowLogOut] = useState(false);
+    const [modalShowProfile, setModalShowProfile] = useState(false);
 
-    const modalHandler = () => {
-        setModalShow(!modalShow);
+    const modalHandlerLogOut = () => {
+        setModalShowLogOut(!modalShowLogOut);
+    };
+
+    const modalHandlerProfile = () => {
+        setModalShowProfile(!modalShowProfile);
     };
 
     const isActiveRoute = (path) => {
@@ -145,7 +150,7 @@ export default function Sidebar({ sidebar, store }) {
             </ul>
             <div className={`footer ${sidebar == false ? 'hidden-sidebar' : ''}`}>
                     <div className='footer-card'>
-                        <div className='mr-2 footer-img'>
+                        <div onClick={modalHandlerProfile} className='mr-2 footer-img'>
                             <img src={user.payload.photo ? user.payload.photo : defaultPhoto} alt="imagen usuario" />
                         </div>
                         <div className='footer-user'>
@@ -159,11 +164,11 @@ export default function Sidebar({ sidebar, store }) {
                                 placement="right"
                                 overlay="Cerrar sesión"
                             >
-                                <div className='link-action' onClick={modalHandler}>
+                                <div className='link-action' onClick={modalHandlerLogOut}>
                                     <img src={logoutImg} alt="Cerrar sesión" />
                                 </div>
                             </Tooltip>
-                        ) : (<div className='link-action' onClick={modalHandler}>
+                        ) : (<div className='link-action' onClick={modalHandlerLogOut}>
                             <img src={logoutImg} alt="Cerrar sesión" /> <span className='text-white'>Cerrar sesión</span>
                         </div>)}
                     </div>
@@ -171,17 +176,41 @@ export default function Sidebar({ sidebar, store }) {
             </div>
            </div>
            <Modal
-                isOpen={modalShow}
+                isOpen={modalShowLogOut}
                 actionOpenOrClose={() => {
-                    setModalShow();
+                    setModalShowLogOut();
                 }}
                 title={`¿Estás seguro que quieres salir?`}
                 size=""
                 description="Al aceptar tendrás que iniciar sesión de nuevo para acceder al administrador."
             >
                 <div className='flex justify-center gap-3'>
-                    <button className="w-full" onClick={modalHandler}>Cancelar</button>
+                    <button className="w-full" onClick={modalHandlerLogOut}>Cancelar</button>
                     <button className="w-full" onClick={logOut}>Salir</button>
+                </div>
+            </Modal>
+           <Modal
+                isOpen={modalShowProfile}
+                actionOpenOrClose={() => {
+                    setModalShowProfile();
+                }}
+                title={`Perfil`}
+                size=""
+                description="A continuacion se muestran los datos del usuario"
+            >
+                <div className=''>
+                    <div className='flex space-x-4'>
+                        <label className='w-1/3'>Nombre</label>
+                        <p className='p-1'>Emmanuel Rodriguez</p>
+                    </div>
+                    <div className='flex space-x-4'>
+                        <label className='w-1/3'>Correo electronico</label>
+                        <p className='p-1'>emanuel@apto.mx</p>
+                    </div>
+                    <div className='flex space-x-4'>
+                        <label className='w-1/3'>Fecha de creacion</label>
+                        <p className='p-1'>10/10/2023</p>
+                    </div>
                 </div>
             </Modal>
         </>

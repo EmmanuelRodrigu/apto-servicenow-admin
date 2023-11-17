@@ -10,3 +10,5 @@
 @import './global/_fonts.css';
 @import './global/_navbar.css';
 @import './global/_home.css';
+@import './global/_status.css';
+@import './global/_switch.css';

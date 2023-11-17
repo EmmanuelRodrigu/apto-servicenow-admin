@@ -42,13 +42,14 @@ export default function App() {
             if (jwt !== null) {
                 const responseMe = await getMe();
                 if (responseMe != null) {
-                    store.saveUser(userFormatShort(responseMe.user, 'client'));
+                    store.saveUser(userFormatShort(responseMe.user, responseMe.user.rol));
                     store.setModulePermissions(responseMe.modulesPermissions);
                     store.saveRole(setRol(responseMe.user.rol, store));
                     getDriverStorage().setItem(
                         'currentUser',
                         JSON.stringify(userFormatShort(responseMe.user))
                     );
+                    
                     if(responseMe.user.rol != 'Client') {
                         navigate('/dashboard')
                     } else {

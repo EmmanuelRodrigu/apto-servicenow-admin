@@ -1,25 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useForm, useWatch, Controller, set } from "react-hook-form";
+import { useForm, useWatch, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Error from '@components/Error';
 import { http } from '@providers/http';
 import notify from '@utils/notify';
-import { Button } from 'react-bootstrap';
+import { Spinner, Button } from 'react-bootstrap';
+import { FaDownload } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { FaEye, FaTrash } from "react-icons/fa";
-import imgLoading from "@assets/loading.gif";
-import Modal from '@components/Modal';
 
-export default function NewsLetter() {
+export default function Weekly({ id, navigate }) {
     const inputFileRef = useRef(null);
     const [loading, setLoading] = useState(false);
     const [list, setList] = useState([]);
-    const [status, setStatus] = useState(null);
     const allowedFiles = ['.png', '.jpg', '.jpeg', '.pdf', '.xls', '.xlsx', '.doc', '.docx'];
     const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const [showModal, setShowModal] = useState(false);
-    const [deleteNew, setDeleteNew] = useState(null);
 
     const schema = yup.object({
         files: yup.mixed().required('Debe adjuntar almenos 1 archivo'),
@@ -46,11 +41,7 @@ export default function NewsLetter() {
     const files = useWatch({
         control,
         name: 'files',
-    });
-
-    const modalHandler = () => {
-        setShowModal(!showModal);
-    };
+      });
 
     const isFileAllowed = (fileName) => {
         let isFileAllowed = false;
@@ -98,30 +89,28 @@ export default function NewsLetter() {
     };
 
     const onSubmit = async (data) => {
-        setLoading(true);
         const dataFormFile = new FormData();
         if(data.files[0]) {
             dataFormFile.append('file', data.files[0])
         }
         dataFormFile.append('title', data.title)
         dataFormFile.append('description', data.description)
-        http.postFile(`api/newsletter/create`, dataFormFile)
+        http.postFile(`api/clients/${id}/create/weekly`, dataFormFile)
             .then((response) => {
                 if(response.status) {
                     notify(response.message, 'success');
                     getData();
                 } else {
-                    notify('error al crear noticia', 'error');
+                    notify('error al crear avance semanal', 'error');
                 };
             })
             .catch((error) => {
                 notify(error, 'error')
             });
-        setLoading(false);
     };
 
     const getData = async () => {
-        http.get(`api/newsletter`)
+        http.get(`api/clients/${id}/weekly`)
             .then((response) => {
                 setList(response);
             })
@@ -130,44 +119,12 @@ export default function NewsLetter() {
             })
     };
 
-    const changeStatus = async (id) => {
-        http.put(`api/newsletter/change-status/${id}`)
-            .then((response) => {
-                if(response.status) {
-                    notify(response.message, 'success');
-                    getData();
-                } else {
-                    notify('Error al cambiar estatus', 'error')
-                }
-            })
-            .catch((error) => {
-                notify(error, 'error');
-            })
-    };
-
-    const deleteNews = async () => {
-        http.delete(`api/newsletter/${deleteNew}/delete`)
-            .then((response) => {
-                if(response.status) {
-                    notify(response.message, 'success');
-                    getData();
-                    modalHandler();
-                } else {
-                    notify('Error al eliminar noticia', 'error');
-                };
-            })
-            .catch((error) => {
-                notify(error, 'error');
-            });
-    };
-
     useEffect(() => {
         getData();
     }, [])
 
     return (
         <div className="p-6 space-y-4">
-            <h1 className="title">NewsLetter</h1>
             <div 
                 className="content-uploads cursor-pointer align-items-center flex justify-center"
                 onDragOver={(event) => handleDragOver(event)}
@@ -257,63 +214,34 @@ export default function NewsLetter() {
                             type="submit"
                             className="btn-primary"
                         >
-                            { loading ? (<img src={imgLoading} />) : "Crear" }
+                            Crear
                         </button>
                     </div>
                 </div>
             </form>
-            <div>
+            <div className="">
+                <h1 className="subtitle">Documentos</h1>
                 {
                     !list ? '' : 
                     <>
-                        <div className="text-center table-responsive table-border table-border-inside">
-                            <table className="bg-slate-100">
+                        <div className="text-center">
+                            <table className="bg-slate-100 table-border table-responsive table-border-inside">
                                 <thead className="font-bold text-lg">
                                     <tr>
                                         <th className="text-center">ID</th>
                                         <th className="text-center">Titulo</th>
-                                        <th className="text-center">Estatus</th>
-                                        <th >Ver</th>
-                                        <th >Eliminar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 {
                                     list.map((v, i) => (
                                         <tr key={`index-${i}`}>
-                                            <td>{v.id}</td>
+                                            <td>
+                                                <Link to={`${v.urlFile}`} className="table-id">
+                                                    {v.id}
+                                                </Link>
+                                            </td>
                                             <td> {v.title} </td>
-                                            <td>
-                                                <label className="switch">
-                                                    <input 
-                                                        type="checkbox"
-                                                        defaultChecked={v.isView}
-                                                        onChange={(e) => {
-                                                            setStatus(e.target.checked)
-                                                            changeStatus(v.id)
-                                                        }}
-                                                    />
-                                                    <span className="slider round"></span>
-                                                </label>
-                                            </td>
-                                            <td >
-                                                 <a href={`${v.url}`} target="_blank">
-                                                <FaEye 
-
-                                                />
-
-                                                </a>
-                                                
-                                            </td>
-                                            <td>
-                                               
-                                                <FaTrash 
-                                                    onClick={() => { 
-                                                        setShowModal(true);
-                                                        setDeleteNew(v.id)
-                                                    }}
-                                                />
-                                            </td>
                                         </tr>
                                     ))
                                 }
@@ -323,20 +251,6 @@ export default function NewsLetter() {
                     </>
                 }
             </div>
-            <Modal
-                isOpen={showModal}
-                actionOpenOrClose={() => {
-                    modalHandler();
-                }}
-                title={`¿Estás seguro de eliminar la noticia?`}
-                size=""
-                description="Al aceptar se eliminara la noticia y no se podra recuperar."
-            >
-                <div className='flex justify-center gap-3'>
-                    <button className="w-full" onClick={deleteNews}>Aceptar</button>
-                    <button className="w-full" onClick={modalHandler}>Cancelar</button>
-                </div>
-            </Modal>
         </div>
     )
 }

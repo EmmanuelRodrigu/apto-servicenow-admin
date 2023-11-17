@@ -33,9 +33,9 @@ export default function Navbar() {
                         <Link to={`/${user.payload.id}/mi-proyecto`} className="link">
                             Mi proyecto
                         </Link>
-                        <a href="#" className="link">
+                        <Link to={`/${user.payload.id}/mi-proyecto`} className="link">
                             Ticket
-                        </a>
+                        </Link>
                         <div className="rounded-full bg-white border-2 w-7 h-7">
                             <button
                             onClick={toggleDropdown}

@@ -1,19 +1,35 @@
-import React from "react"
-import { useNavigate, Link } from "react-router-dom"
-import { useStore } from '@store'
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useStore } from '@store';
+import { http } from "@providers/http";
 
 export default function HomePage() {
     const store = useStore();
     const navigate = useNavigate()
     const { user } = store;
+    const [data, setData] = useState([]);
+
+    const getData = async () => {
+        http.get('api/newsletter/view')
+            .then((response) => {
+                setData(response)
+            })
+            .catch((error) => {
+                notify(error, 'error')
+            })
+    }
+
+    useEffect(() => {
+        getData();
+    }, [])
 
     return (
-        <div>
-            <div className="w-full bg-slate-200 shadow-md h-80">
-                
+        <div className="space-y-6">
+            <div className="w-full bg-slate-200 shadow-md h-min-screen h-screen">
+                <img className="h-screen w-screen" src={`${data.url}`} ></img>
             </div>
-            <h1 className="text-xl py-5 text-center">¿Que tipo de problema reportar?</h1>
-            <div className="flex flex-cols-3 justify-evenly">
+            <h1 className="text-2xl rounded-full text-center bg-gray-600 p-2 text-white">¿Que tipo de problema reportar?</h1>
+            <div className="flex flex-cols-3 h-1/2 py-10 justify-evenly">
                 <div className="flex p-4">
                     <div className="w-1/3 p-4 hover:py-1">
                         <div className="card-f text-white rounded-lg shadow-md p-4">

@@ -9,13 +9,16 @@ import { Link } from 'react-router-dom';
 import { http } from '@providers/http';
 import notify from "@utils/notify";
 import Modal from '@components/Modal';
+import  ChangePassword  from './changePassword';
+import CreateAccount from './createAccount';
+import Weekly from './weekly';
 
 export default function UpdateClient({ data, id, navigate, optionsTaxData, defaultOption }) {
-
     const store = useStore();
     const [validSecondContact, setValidSecondContact] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [view, setView] = useState('info');
 
     const options = [
         {value: 'Fisica', label: 'Fisica'},
@@ -66,11 +69,11 @@ export default function UpdateClient({ data, id, navigate, optionsTaxData, defau
             email_contact: data.major_contact.email,
             phone_contact: data.major_contact.phone,
             area_contact: data.major_contact.area,
-            name_scontact: data.secondary_contact.name,
-            last_name_scontact: data.secondary_contact.last_name,
-            email_scontact: data.secondary_contact.email,
-            phone_scontact: data.secondary_contact.phone,
-            area_scontact: data.secondary_contact.area,
+            name_scontact: data.secondary_contact?.name,
+            last_name_scontact: data.secondary_contact?.last_name,
+            email_scontact: data.secondary_contact?.email,
+            phone_scontact: data.secondary_contact?.phone,
+            area_scontact: data.secondary_contact?.area,
         }
     });
 
@@ -137,16 +140,24 @@ export default function UpdateClient({ data, id, navigate, optionsTaxData, defau
 
     return (
         <>
+            <div className='flex flex-cols-2 justify-between'>
+                <h1 className="title">Detalles - Actualizar cliente</h1>
+                <button onClick={() => { setShowModal(true) }} className='btn-delete'>Eliminar cliente</button>
+            </div>
+            <div className='flex pl-10 pr-10 pt-6 space-x-4'>
+                <button onClick={() => {setView('info')}} className={`subtitle pb-10 pl-2 border-black ${view === 'info' ? 'border-b-2' : ''}`}>Informacion de cliente</button>
+                <button onClick={() => {setView('account')}} className={`subtitle pb-10 pl-2 border-black ${view === 'account' ? 'border-b-2' : ''}`}>Cuenta de cliente</button>
+                <button onClick={() => {setView('weekly')}} className={`subtitle pb-10 pl-2 border-black ${view === 'weekly' ? 'border-b-2' : ''}`}>Avances semanales</button>
+            </div>
+        {
+            view === 'info' ?
+            (
+
             <div>
-                <div className='flex flex-cols-2 justify-between'>
-                    <h1 className="title">Detalles - Actualizar cliente</h1>
-                    <button onClick={() => { setShowModal(true) }} className='btn-delete'>Eliminar cliente</button>
-                </div>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className='flex flex-cols-2 justify-evenly pt-10'>
                         <div className='docker border-x border-y w-11/12 '>
-                            <div className='pl-10 pr-10 pt-6 pb-4'>
-                                <h2 className='subtitle pb-10 text-left'>Informacion de cliente</h2>
+                            <div className='pl-10 pr-10 pb-4'>
                                 <div>
                                     <div className='pb-10'>
                                         <h3 className='text-input'>Regimen fiscal*</h3>
@@ -156,7 +167,6 @@ export default function UpdateClient({ data, id, navigate, optionsTaxData, defau
                                             className={`w-max w-4/6 text-sm pt-2`}
                                             placeholder='Seleccionar una opcion'
                                             onChange={(option) => {
-                                                console.log(option.value)
                                                 setValue('tax_data', option.value)
                                             }}
                                         />
@@ -401,6 +411,25 @@ export default function UpdateClient({ data, id, navigate, optionsTaxData, defau
                     </div>
                 </form>
             </div>
+            ) : view === 'weekly' ? (
+                <Weekly
+                    id={id}
+                    navigate={navigate}
+                />
+            ) : data.accountClient ? (
+                <ChangePassword 
+                    data={data.accountClient}
+                    id={id}
+                    navigate={navigate}
+                />
+            ) : (
+                <CreateAccount 
+                    data={data}
+                    id={id}
+                    navigate={navigate}
+                />
+            )
+        }
             <Modal
                 isOpen={showModal}
                 actionOpenOrClose={() => {
@@ -410,11 +439,11 @@ export default function UpdateClient({ data, id, navigate, optionsTaxData, defau
                 size=""
                 description="Al aceptar se eliminara el cliente y no se podra recuperar."
             >
-            <div className='flex justify-center gap-3'>
-                <button className="w-full" onClick={deleteClient}>Aceptar</button>
-                <button className="w-full" onClick={modalHandler}>Cancelar</button>
-            </div>
-        </Modal>
+                <div className='flex justify-center gap-3'>
+                    <button className="w-full" onClick={deleteClient}>Aceptar</button>
+                    <button className="w-full" onClick={modalHandler}>Cancelar</button>
+                </div>
+            </Modal>
     </>
     )
 

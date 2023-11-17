@@ -54,7 +54,6 @@ export default function ManageProjects() {
     }
 
     const onSubmit = async (values) => {
-        console.log(projects)
         const type = projects.map((project) => { return [project.value] })
         const data = {
             name: values.name,
@@ -141,7 +140,7 @@ export default function ManageProjects() {
                     <div className='pr-4'>
                         <button type='submit' className='btn-primary'>Crear proyecto</button>
                     </div>
-                    <Link to={'/usuarios'} className='btn-cancel'>Cancelar</Link>
+                    <Link to={'/proyectos'} className='btn-cancel'>Cancelar</Link>
                 </div>
             </form>
         </div>

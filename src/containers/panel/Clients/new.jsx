@@ -72,6 +72,7 @@ export default function NewClient() {
     });
 
     const onSubmit = async (values) => {
+        setLoading(true);
         const send = {
             person: values.person,
             tax_data: values.tax_data,
@@ -95,12 +96,10 @@ export default function NewClient() {
                 area_scontact: values.area_scontact,
             }
         }
-        setLoading(true);
         await http.post('api/clients/create', send)
             .then((response) => {
                 if(response.status > 400) {
                     notify(response.message, 'error');
-                    setLoading(false);
                 } else {
                     notify('Cliente creado exitosamente', 'success');
                     navigate('/clientes')
@@ -108,8 +107,8 @@ export default function NewClient() {
             })
             .catch((error) => {
                 notify(error, 'error');
-                setLoading(false);
             });
+        setLoading(false);
     };
 
     const getTaxData = async () => {
@@ -130,11 +129,11 @@ export default function NewClient() {
         <div className="">
             <h1 className="title">Crear nuevo cliente</h1>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <div className='flex flex-cols-2 justify-evenly pt-10'>
+                <div className='flex flex-cols-2 flex-wrap justify-evenly pt-10'>
                     <div className='docker border-x border-y w-11/12 '>
                         <div className='pl-10 pr-10 pt-6 pb-4'>
                             <h2 className='subtitle pb-10 text-left'>Informacion de cliente</h2>
-                            <div>
+                            <div className='relative'>
                                 <div className='pb-10'>
                                     <h3 className='text-input'>Regimen Fiscal*</h3>
                                     <Select
@@ -148,8 +147,8 @@ export default function NewClient() {
                                     <Error error={errors?.tax_data} />
                                 </div>
                             </div>
-                            <div className='flex flex-cols-3 justify-start'>
-                                <div className='pb-10 w-1/5'>
+                            <div className='flex flex-cols-3 flex-wrap justify-start'>
+                                <div className='pb-10 w-1/5 relative'>
                                     <h3 className='text-input'>Persona</h3>
                                     <Select 
                                         options={options}
@@ -161,7 +160,7 @@ export default function NewClient() {
                                     />
                                     <Error error={errors?.person} />
                                 </div>
-                                <div className='pb-10 w-2/5'>
+                                <div className='pb-10 w-2/5 relative'>
                                     <h3 className='text-input'>RFC*</h3>
                                     <input
                                         type='text' 
@@ -171,7 +170,7 @@ export default function NewClient() {
                                     />
                                     <Error error={errors?.rfc} />
                                 </div>
-                                <div className='pb-10 w-2/5'>
+                                <div className='pb-10 w-2/5 relative'>
                                     <h3 className='text-input'>Nombre*</h3>
                                     <input 
                                         type='text' 
@@ -194,8 +193,8 @@ export default function NewClient() {
                                     <Error error={errors?.reason_social} />
                                 </div>
                             </div>
-                            <div className='flex flex-cols-2 justify-start'>
-                                <div className='pb-10 w-2/4'>
+                            <div className='flex flex-cols-2 flex-wrap justify-start'>
+                                <div className='pb-10 w-2/4 relative'>
                                     <h3 className='text-input'>Domicilio*</h3>
                                     <input 
                                         type='text' 
@@ -205,7 +204,7 @@ export default function NewClient() {
                                     />
                                     <Error error={errors?.street} />
                                 </div>
-                                <div className='pb-10 w-2/4'>
+                                <div className='pb-10 w-2/4 relative'>
                                     <h3 className='text-input'>Código postal*</h3>
                                     <input 
                                         type='text' 
@@ -216,8 +215,8 @@ export default function NewClient() {
                                     <Error error={errors?.cp} />
                                 </div>
                             </div>
-                            <div className='flex flex-cols-2 justify-start'>
-                                <div className='pb-10 w-2/4'>
+                            <div className='flex flex-cols-2 flex-wrap justify-start'>
+                                <div className='pb-10 w-2/4 relative'>
                                     <h3 className='text-input'>Municipio*</h3>
                                     <input 
                                         type='text' 
@@ -227,7 +226,7 @@ export default function NewClient() {
                                     />
                                     <Error error={errors?.municipality} />
                                 </div>
-                                <div className='pb-10 w-2/4'>
+                                <div className='pb-10 w-2/4 relative'>
                                     <h3 className='text-input'>Estado*</h3>
                                     <input 
                                         type='text' 
@@ -245,8 +244,8 @@ export default function NewClient() {
                                 <h2 className='subtitle text-left'>Informacion de contacto principal</h2>
                             </div>
                             <div>
-                                <div className='flex flex-cols-2 justify-start'>
-                                    <div className='pb-10 w-2/4'>
+                                <div className='flex flex-cols-2 flex-wrap justify-start'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Nombre*</h3>
                                         <input 
                                             type='text' 
@@ -256,7 +255,7 @@ export default function NewClient() {
                                         />
                                         <Error error={errors?.name_contact} />
                                     </div>
-                                    <div className='pb-10 w-2/4'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Apellido*</h3>
                                         <input 
                                             placeholder='Escribe el apellido'
@@ -266,8 +265,8 @@ export default function NewClient() {
                                         <Error error={errors?.last_name_contact} />
                                     </div>
                                 </div>
-                                <div className='flex flex-cols-2 justify-start'>
-                                    <div className='pb-10 w-2/4'>
+                                <div className='flex flex-cols-2flex-wrap justify-start'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Correo electronico*</h3>
                                         <input
                                             placeholder='Escribe el correo electronico'
@@ -276,7 +275,7 @@ export default function NewClient() {
                                         />
                                         <Error error={errors?.email_contact} />
                                     </div>
-                                    <div className='pb-10 w-2/4'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Telefono*</h3>
                                         <input
                                             placeholder='Escribe el telefono'
@@ -286,7 +285,7 @@ export default function NewClient() {
                                         <Error error={errors?.phone_contact} />
                                     </div>
                                 </div>
-                                    <div className='pb-10 w-2/4'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Area</h3>
                                         <input
                                             placeholder='Escribe el Area de trabajo'
@@ -302,8 +301,8 @@ export default function NewClient() {
                                 <h2 className='subtitle text-left'>Informacion de contacto secundario</h2>
                             </div>
                             <div>
-                                <div className='flex flex-cols-2 justify-start'>
-                                    <div className='pb-10 w-2/4'>
+                                <div className='flex flex-cols-2 flex-wrap justify-start'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Nombre*</h3>
                                         <input 
                                             type='text' 
@@ -317,7 +316,7 @@ export default function NewClient() {
                                         />
                                         <Error error={errors?.name_scontact} />
                                     </div>
-                                    <div className='pb-10 w-2/4'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Apellido*</h3>
                                         <input 
                                             placeholder='Escribe el apellido'
@@ -331,8 +330,8 @@ export default function NewClient() {
                                         <Error error={errors?.last_name_scontact} />
                                     </div>
                                 </div>
-                                <div className='flex flex-cols-2 justify-start'>
-                                    <div className='pb-10 w-2/4'>
+                                <div className='flex flex-cols-2 flex-wrap justify-start'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Correo electronico*</h3>
                                         <input
                                             placeholder='Escribe el correo electronico'
@@ -345,7 +344,7 @@ export default function NewClient() {
                                         />
                                         <Error error={errors?.email_scontact} />
                                     </div>
-                                    <div className='pb-10 w-2/4'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Telefono*</h3>
                                         <input
                                             placeholder='Escribe el telefono'
@@ -359,7 +358,7 @@ export default function NewClient() {
                                         <Error error={errors?.phone_scontact} />
                                     </div>
                                 </div>
-                                    <div className='pb-10 w-2/4'>
+                                    <div className='pb-10 w-2/4 relative'>
                                         <h3 className='text-input'>Area</h3>
                                         <input
                                             placeholder='Escribe el Area de trabajo'
@@ -376,11 +375,11 @@ export default function NewClient() {
                         </div>
                     </div>
                 </div>
-                <div className='flex justify-end pt-10 pr-40 pb-6'>
-                    <div className='pr-4'>
-                        <button type='submit' className='btn-primary'>Crear cliente</button>
+                <div className='flex flex-wrap justify-end pt-10 pr-40 pb-6'>
+                    <div className='pr-4 relative'>
+                        <button type='submit' className='btn-primary'>{ loading ? <img src={''} /> : 'Crear cliente' }</button>
                     </div>
-                    <Link to={'/clients'} className='btn-cancel'>Cancelar</Link>
+                    <Link to={'/clientes'} className='btn-cancel'>Cancelar</Link>
                 </div>
             </form>
         </div>

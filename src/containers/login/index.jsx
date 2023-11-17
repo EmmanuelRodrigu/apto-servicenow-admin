@@ -13,11 +13,15 @@ import { gapi } from 'gapi-script';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { getDriverStorage, userFormatShort, setRol } from "../../utils";
 import { VITE_CLIENT_ID } from '@utils/constants';
+import Modal from '@components/Modal';
 
 export default function Login() {
     const store = useStore();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const [modalShow, setModalShow] = useState(false);
     const [show, setShow] = useState(false);
+    const [forgotPassword, setForgotPassword] = useState(null);
+    const [disable, setDisable] = useState(true);
     const clientId = VITE_CLIENT_ID;
     const handleClick = () => setShow(!show);
     const modules = [
@@ -37,7 +41,11 @@ export default function Login() {
     const saveToken = (access_token) => {
         getDriverStorage().setItem('tokenApto', access_token);
         store.saveJwt(access_token)
-    }
+    };
+
+    const modalHandler = () => {
+        setModalShow(!modalShow);
+    };
 
     const saveUser = (user, type) => {
         getDriverStorage().setItem(
@@ -75,6 +83,21 @@ export default function Login() {
             })
     };
 
+    const changePassword = async () => {
+        await http.post('auth/forgotPassword', forgotPassword)
+            .then((response) => {
+                if(response.status) {
+                    notify(response.message, 'success');
+                    modalHandler();
+                } else {
+                    notify(response.message, 'error');
+                }
+            })
+            .catch((error) => {
+                notify(error, 'error');
+            })
+    };
+
     function parseJwt (token) {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace('-', '+').replace('_', '/');
@@ -92,11 +115,24 @@ export default function Login() {
             fullName: payload.name,
             photo: payload.picture,
         }
-        store.setSession(true);
-        saveToken(responseGoogle.credential);
-        saveUser(userFormatShort(user, 'admin'));
-        store.setModulePermissions(modules);
-        navigate('/dashboard');
+        const values = {
+            email: payload.email,
+            fullName: payload.name,
+        }
+        
+        await http.post('auth/google', values)
+            .then((response) => {
+                if(response.status) {
+                    store.setSession(true);
+                    saveToken(response.access_token);
+                    saveUser(userFormatShort(user, 'admin'));
+                    store.setModulePermissions(modules);
+                    navigate('/dashboard');
+                }
+            })
+            .catch((error) => {
+                notify(error, 'error')
+            });
     };
 
     const onError = () => {
@@ -151,21 +187,29 @@ export default function Login() {
                                 </button>
                                 <Error error={errors?.password} />
                             </div>
-                            <div className='mt-8 flex justify-between items-center'>
-                                <button className='font-medium text-base text-fuchsia-900'>Recuperar contraseña</button>
+                            <div className='mt-8 flex justify-between items-center cursor-pointer'>
+                                <p 
+                                    className='font-medium text-base text-fuchsia-900'
+                                    onClick={modalHandler }
+                                >
+                                    ¿Olvidaste tu contraseña?
+                                </p>
                             </div>
                             <div className='mt-8 flex flex-col gap-y-4'>
                                 <button
                                     className='active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4 bg-black rounded-xl text-white font-bold text-lg'>Iniciar sesión
                                 </button>
-                                <div className="">
-                                    <p className="text-lg py-2">O inicia sesion con una cuenta de Google</p>
+                                <div className="w-full">
                                     <GoogleOAuthProvider clientId={clientId}>
                                         <GoogleLogin
-                                            width={20}
+                                            type="standard"
+                                            size="large"
+                                            width={"100px"}
                                             onSuccess={onSuccess}
                                             onError={onError}
                                             useOneTap
+                                            shape="circle"
+                                            theme="filled_black"
                                         />
                                     </GoogleOAuthProvider>
                                 </div>
@@ -177,6 +221,48 @@ export default function Login() {
             <div className="login relative w-1/2 h-full lg:flex items-center justify-center">
                 <div className="w-80 h-80 bg-no-repeat bg-cover bg-center hidden sm:block bg-no-repeat" style={{backgroundImage: `url(${bgImg})`}}/>
             </div>
-    </div>
+            <Modal
+                isOpen={modalShow}
+                actionOpenOrClose={() => {
+                    setModalShow();
+                }}
+                title={`Recuperar contraseña`}
+                size=""
+                description="Te enviaremos a tu correo las instrucciones para restablecer tu contraseña"
+            >
+                <div className='space-y-4'>
+                    <div className="p-1">
+                        <label>Correo electronico</label>
+                        <input 
+                            className={`w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent h-10 ${ !forgotPassword ? 'error' : '' }`}
+                            onChange={(e) => {
+                                if(e.target.value) {
+                                    setForgotPassword({ email: e.target.value });
+                                    setDisable(false);
+                                } else{
+                                    setForgotPassword(null);
+                                    setDisable(true);
+                                }
+                            }}
+                        />
+                    </div>
+                    <div className="flex justify-end space-x-4">
+                        <div 
+                            className="p-1 border-2 border-black rounded-lg"
+                            onClick={modalHandler}
+                        >
+                            Cancelar
+                        </div>
+                        <button 
+                            disabled={disable} 
+                            className="p-1 border-2 bg-black text-white rounded-lg hover:bg-violet-800 cursor-pointer"
+                            onClick={changePassword}
+                        >
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+        </div>
   );
 }

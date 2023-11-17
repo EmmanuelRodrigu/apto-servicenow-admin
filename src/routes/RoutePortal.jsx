@@ -6,6 +6,7 @@ import NewFunctionality from "@containers/Portal/Tickets/NewFunctionality";
 import Bug from "@containers/Portal/Tickets/Bug";
 import Support from "@containers/Portal/Tickets/Support";
 import MyProject from '@containers/Portal/MyProject';
+import Weekly from "@containers/Portal/MyProject/weekly";
 
 function RouterPortal(props) {
     const location = useLocation();
@@ -51,6 +52,13 @@ function RouterPortal(props) {
                 exact
                 element={
                     <MyProject />
+                }
+            />
+            <Route
+                path="/:clientId/avances"
+                exact
+                element={
+                    <Weekly />
                 }
             />
         </Routes>

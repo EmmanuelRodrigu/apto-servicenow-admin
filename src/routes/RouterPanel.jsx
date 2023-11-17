@@ -149,16 +149,6 @@ function RouterPanel(props) {
                     </ProtectedRoute>
                 }
             />
-            <Route
-                path='/listado-de-pagos'
-                exact
-                element={
-                    <ProtectedRoute modulePermissions={modulePermissions} nameRoute="Payments">
-                        <Payments/>
-                    </ProtectedRoute>
-                }
-            />
-            <Route path='/not-permissions' element={<NotPermissions/>} />
         </Routes>
     )
 }

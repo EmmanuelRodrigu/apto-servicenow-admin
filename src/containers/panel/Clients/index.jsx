@@ -24,10 +24,10 @@ export default function Clients() {
         await http.get('api/clients', params)
             .then((response) => {
                 setList(response.data);
-                setPaginate(response.paginate)
+                setPaginate(response.paginate);
             })
             .catch((error) => {
-                notify(error, 'error')
+                notify(error, 'error');
             });
     };
 
@@ -74,8 +74,8 @@ export default function Clients() {
             </div>
             {!list ? '' : 
             <>
-                <div className="pt-5">
-                    <table className="table-responsive table-border table-border-inside">
+                <div className="pt-5 table-responsive table-border table-border-inside">
+                    <table>
                         <thead className="table-head">
                             <tr >
                                 <th>
