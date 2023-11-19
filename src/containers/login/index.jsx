@@ -96,6 +96,7 @@ export default function Login() {
             .catch((error) => {
                 notify(error, 'error');
             })
+        setForgotPassword(null);
     };
 
     function parseJwt (token) {
