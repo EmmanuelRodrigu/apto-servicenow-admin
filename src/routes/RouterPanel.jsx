@@ -32,7 +32,7 @@ function RouterPanel(props) {
     return (
         <Routes>
             <Route
-                path='/dashboard'
+                path='/'
                 exact
                 element={
                     <ProtectedRoute modulePermissions={modulePermissions} nameRoute="Dashboard">

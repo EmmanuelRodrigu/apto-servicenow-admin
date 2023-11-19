@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import Layout from '@components/Layout';
 import { http } from '@providers/http';
 import notify from '@utils/notify';
+import Splash from '@components/Splash';
 import { useNavigate } from 'react-router-dom';
 import {
   userFormatShort,
@@ -63,11 +64,18 @@ export default function App() {
         store.saveJwt(getJwt(user));
         getSidebar(store);
         store.setSession(hasSession);
+        setTimeout(() => {
+            store.setSplash(false);
+        }, 100)
     }, []);
+
+    if(app.showSplash) {
+        return <Splash />;
+    };
     
     if (!app.session) {
-        return <Login />
-    }
+        return <Login />;
+    };
 
     return (
         <main>

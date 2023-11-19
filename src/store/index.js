@@ -32,6 +32,11 @@ const globalStore = () =>
                     rol: ''
                 },
             })),
+        setSplash: (value) =>
+            set((state) => {
+                state.app.showSplash = value;
+                return { state };
+            }),
         setSession: (value) =>
             set((state) => {
                 state.app.session = value;

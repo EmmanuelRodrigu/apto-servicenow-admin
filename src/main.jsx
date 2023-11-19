@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import App from './containers/App/index.jsx';
+import NotLoggedRoutes from './routes/NotLoggedRoutes';
 import { ToastContainer } from 'react-toastify';
 import { Provider, globalStore } from '@store'
 import './styles/app.css';
@@ -9,7 +9,7 @@ import './styles/app.css';
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider createStore={globalStore}>
     <BrowserRouter>
-      <App />
+      <NotLoggedRoutes />
     </BrowserRouter>
     <ToastContainer/>
   </Provider>
