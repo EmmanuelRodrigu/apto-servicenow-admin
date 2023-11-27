@@ -8,7 +8,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Link } from 'react-router-dom';
 import { http } from '@providers/http';
 import notify from "@utils/notify";
-import Modal from '@components/Modal';
 
 export default function ChangePassword({ data, id, navigate }) {
 
@@ -74,10 +73,10 @@ export default function ChangePassword({ data, id, navigate }) {
                             />
                         </div>
                     </div>
-                    <div className='justify-evenly pl-36'>
-                        <div className=''>
+                        <div className='text-center'>
                             <h2 className='subtitle'>Nueva contraseña</h2>
                         </div>
+                    <div className='flex justify-evenly space-y-10'>
                         <div className='flex justify-start py-4 space-x-4'>
                             <div className='flex flex-cols-2'>
                                 <div className='pt-2 pr-2'>

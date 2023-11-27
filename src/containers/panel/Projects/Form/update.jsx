@@ -136,9 +136,9 @@ export default function UpdateProject({ data, id, navigate }) {
                 actionOpenOrClose={() => {
                     setModalShow();
                 }}
-                title={`¿Estás seguro de eliminar al cliente?`}
+                title={`¿Estás seguro de eliminar el proyecto?`}
                 size=""
-                description="Al aceptar se eliminara el proeycto y no se podra recuperar."
+                description="Al aceptar se eliminara el proyecto y no se podra recuperar."
             >
                 <div className='flex justify-center gap-3'>
                     <button className="w-full" onClick={deleteProject}>Aceptar</button>

@@ -94,21 +94,6 @@ export default function Projects() {
                         }}
                     />
                 </div>
-                <div className="pt-5 pb-5 pl-10">
-                    <p className="text-lg">Filtros</p>
-                    <div className=" relative">
-                        <div className="pr-5">
-                         <input 
-                            className="text-sm text-center pr-5 h-8 w-48 rounded-md" 
-                            placeholder="Fecha de creacion" 
-                            type="date"
-                            onChange={(date) => {
-                                console.log(date.target.value)
-                            }}
-                         />
-                        </div>
-                    </div>
-                </div>
             </div>
             {!list ? '' : 
             <>

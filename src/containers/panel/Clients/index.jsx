@@ -3,7 +3,7 @@ import { http } from '@providers/http.js';
 import notify from '@utils/notify';
 import { Link } from "react-router-dom";
 import { useStore } from '@store';
-import { FaMailBulk, FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import Paginate from '@components/Paginate';
 import paramsState from "@components/Hooks/Params";
 import { useDebouncedCallback } from "use-debounce";
@@ -106,7 +106,6 @@ export default function Clients() {
                                 <th>Contacto principal</th>
                                 <th>Correo electronico</th>
                                 <th>Telefono</th>
-                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -123,9 +122,6 @@ export default function Clients() {
                                 <td>{v.full_name}</td>
                                 <td>{v.email}</td>
                                 <td>{v.phone}</td>
-                                <td className="flex justify-left">
-                                    <FaMailBulk className="h-6" onClick={() => console.log('email')}/>
-                                </td>
                             </tr>
                         ))
 
