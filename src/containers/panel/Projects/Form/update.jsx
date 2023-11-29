@@ -15,8 +15,7 @@ export default function UpdateProject({ data, id, navigate }) {
     const schema = yup.object({
         name: yup.string().required('El campo nombre proyecto es requerido'),
         description: yup.string().required('El campo descripcion es requerido'),
-        client: yup.string().required('El campo cliente es requerido'),
-        type_project: yup.array().required().min(1, 'El campo tipo de proyecto debe contener al menos 1 elemento')
+        client: yup.string(),
     }).required()
 
     const modalHandler = () => {
@@ -34,14 +33,13 @@ export default function UpdateProject({ data, id, navigate }) {
             name: data.dataProject.name,
             description: data.dataProject.description,
             client: data.clientOfProject ? data.clientOfProject.value : '',
-            typeProject: data.dataProject.type_project,
         }
     });
 
     const onSubmit = async (values) => {
         await http.put(`api/projects/update/${id}`, values)
             .then((response) => {
-                if(response < 400) {
+                if(response) {
                     notify('Proyecto actualizado', 'success');
                     navigate('/proyectos');
                 }else {
@@ -74,7 +72,7 @@ export default function UpdateProject({ data, id, navigate }) {
                 <h1 className="title">Detalles - Editar proyecto</h1>
                 <button onClick={() => { setShowModal(true) }} className='btn-delete'>Eliminar proyecto</button>
             </div>
-            <form method='POST' onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <div className='pt-6'>
                     <div className="docker border-x border-y w-11/12">
                         <div className="pl-10 pr-10 pt-6 pb-4">
