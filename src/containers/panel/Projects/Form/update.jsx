@@ -21,7 +21,7 @@ export default function UpdateProject({ data, id, navigate }) {
     const modalHandler = () => {
         setShowModal(!showModal);
     };
-
+    
     const {
         setValue,
         register, 
@@ -32,11 +32,12 @@ export default function UpdateProject({ data, id, navigate }) {
         defaultValues: {
             name: data.dataProject.name,
             description: data.dataProject.description,
-            client: data.clientOfProject ? data.clientOfProject.value : '',
+            clientId: data.clientOfProject ? data.clientOfProject.value : '',
         }
     });
 
     const onSubmit = async (values) => {
+        console.log(values)
         await http.put(`api/projects/update/${id}`, values)
             .then((response) => {
                 if(response) {
@@ -102,9 +103,9 @@ export default function UpdateProject({ data, id, navigate }) {
                                         className='w-full w-2/3 text-sm pt-2'
                                         onChange={(option) => {
                                             if(option != null) {
-                                                setValue('client', option.value)
+                                                setValue('clientId', option.value)
                                             } else{
-                                                setValue('client')
+                                                setValue('clientId')
                                             }
                                         }}
                                     />

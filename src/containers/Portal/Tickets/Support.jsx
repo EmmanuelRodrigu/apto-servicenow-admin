@@ -44,7 +44,7 @@ export default function Support() {
     defaultValues: {
       files: [],
       summary: "",
-      type_request: "BUG",
+      type_request: "SUPPORTREQUEST",
       reporter: "",
     },
   });

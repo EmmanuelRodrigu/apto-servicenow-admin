@@ -44,7 +44,7 @@ export default function NewFunctionality() {
     defaultValues: {
       files: [],
       summary: "",
-      type_request: "BUG",
+      type_request: "FUNCTIONALITY",
       reporter: "",
     },
   });
