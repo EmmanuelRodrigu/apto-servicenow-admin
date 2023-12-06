@@ -23,7 +23,7 @@ export default function Sidebar({ sidebar, store }) {
     const { app, user } = store;
     const [modalShowLogOut, setModalShowLogOut] = useState(false);
     const [modalShowProfile, setModalShowProfile] = useState(false);
-
+    
     const modalHandlerLogOut = () => {
         setModalShowLogOut(!modalShowLogOut);
     };

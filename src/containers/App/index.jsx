@@ -24,6 +24,7 @@ export default function App() {
     const { user, app } = store;
 
     useEffectAsync(async () => {
+        console.log(user)
         const hasSession = getHasSession(user);
         const getMe = async () => {
             return await http
